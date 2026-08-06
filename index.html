@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZL Ham Radio Toolkit</title>
+<meta name="description" content="NZART amateur radio exam study tool and station call log.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2328; --muted:#5b6069;
+    --line:#e3e3e0; --accent:#3b5b6e; --accent-ink:#ffffff; --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:64px 20px}
+  h1{font-size:1.7rem;margin:0 0 6px}
+  p.lead{color:var(--muted);margin:0 0 40px}
+  .cards{display:grid;gap:16px;grid-template-columns:1fr}
+  @media (min-width:640px){.cards{grid-template-columns:1fr 1fr}}
+  a.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;text-decoration:none;color:var(--ink);transition:border-color .15s ease, transform .15s ease}
+  a.card:hover{border-color:var(--accent);transform:translateY(-1px)}
+  a.card h2{margin:0 0 8px;font-size:1.1rem}
+  a.card p{margin:0;color:var(--muted);font-size:.92rem}
+  footer{margin-top:48px;color:var(--muted);font-size:.82rem}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>ZL Ham Radio Toolkit</h1>
+    <p class="lead">Study for the NZART Amateur Radio Examination, and log your contacts on air.</p>
+    <div class="cards">
+      <a class="card" href="study/">
+        <h2>Exam Study Tool →</h2>
+        <p>Work through the NZART question bank in Test mode or Learn mode.</p>
+      </a>
+      <a class="card" href="calllog/">
+        <h2>Station Call Log →</h2>
+        <p>Private, key-protected logbook for tracking contacts. Requires your access key.</p>
+      </a>
+    </div>
+    <footer>Question content sourced from the NZART Amateur Radio Examination Question Bank, which NZART states is in the public domain.</footer>
+  </div>
+</body>
+</html>

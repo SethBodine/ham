@@ -1,0 +1,20 @@
+name = "ham-b0x-co-nz"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "."
+
+# The call log API (functions/api/*) needs a KV namespace bound as LOGBOOK.
+# Create it once with:
+#   npx wrangler kv namespace create LOGBOOK
+# then paste the id (and preview_id, if you want a separate namespace for
+# `wrangler pages dev`) below. No TTL is ever set on writes, so entries are
+# kept indefinitely until explicitly deleted.
+[[kv_namespaces]]
+binding = "LOGBOOK"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+# preview_id = "REPLACE_WITH_A_SEPARATE_PREVIEW_NAMESPACE_ID"
+
+# The access key itself is NOT set here — set it as a Pages secret instead
+# (Cloudflare dashboard: Pages project → Settings → Environment variables →
+# Add variable → LOG_API_KEY → Encrypt, or `npx wrangler pages secret put
+# LOG_API_KEY`). Generate the key locally with:
+#   openssl rand -hex 32
