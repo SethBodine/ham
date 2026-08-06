@@ -30,6 +30,7 @@
     attrs = attrs || {};
     Object.keys(attrs).forEach(function (k) {
       if (k === 'class') e.className = attrs[k];
+      else if (k === 'disabled') e.disabled = !!attrs[k];
       else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), attrs[k]);
       else e.setAttribute(k, attrs[k]);
     });

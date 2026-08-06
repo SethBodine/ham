@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var STORAGE_KEY = 'nzart-study-progress-v1';
-  var REVEAL_DELAY_MS = 1400;
+  var REVEAL_DELAY_MS = 18000;
 
   // Real exam draws exactly 1 question per 10 in the bank, per topic (60 total).
   var EXAM_DRAW_RATIO = 10;
@@ -51,6 +51,7 @@
     attrs = attrs || {};
     Object.keys(attrs).forEach(function (k) {
       if (k === 'class') e.className = attrs[k];
+      else if (k === 'disabled') e.disabled = !!attrs[k];
       else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), attrs[k]);
       else e.setAttribute(k, attrs[k]);
     });
@@ -275,14 +276,18 @@
       var wasRight = state.selectedOption === q.answer;
       card.appendChild(el('div', { class: 'explain' }, [
         el('span', { class: 'label' }, [wasRight ? 'Correct!' : 'Not quite.']),
-        el('span', {}, ['The correct answer is ' + q.answer.toUpperCase() + ': ' + correctOpt + '.'])
+        el('span', {}, ['The correct answer is ' + q.answer.toUpperCase() + ': ' + correctOpt + '.']),
+        q.explanation ? el('p', { class: 'why' }, [q.explanation]) : null
       ]));
     }
     if (state.mode === 'learn') {
       if (state.revealed) {
-        card.appendChild(el('div', { class: 'learn-note' }, ['Answer highlighted above.']));
+        card.appendChild(el('div', { class: 'explain' }, [
+          el('span', { class: 'label' }, ['Why']),
+          q.explanation ? el('p', { class: 'why' }, [q.explanation]) : el('p', { class: 'why' }, ['Answer highlighted above.'])
+        ]));
       } else {
-        card.appendChild(el('div', { class: 'learn-note pending' }, ['Revealing the answer…']));
+        card.appendChild(el('div', { class: 'learn-note pending' }, ['Revealing the answer… (click to reveal now)']));
         card.addEventListener('click', revealLearnNow);
         state.revealTimer = setTimeout(revealLearnNow, REVEAL_DELAY_MS);
       }
@@ -387,6 +392,7 @@
             'Correct: ' + q.answer.toUpperCase() + ' — ' + q.options[q.answer] +
             (given ? ('. You chose: ' + given.toUpperCase() + ' — ' + q.options[given]) : '. You skipped this one.')
           ]));
+          if (q.explanation) row.appendChild(el('p', { class: 'review-why' }, [q.explanation]));
           review.appendChild(row);
         });
         panel.appendChild(review);

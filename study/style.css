@@ -58,7 +58,10 @@ a{color:var(--accent)}
 .review-row{padding:10px 0;border-bottom:1px solid var(--line)}
 .review-row:last-child{border-bottom:none}
 .review-q{margin:0 0 4px;font-weight:600;font-size:.88rem}
-.review-a{margin:0;color:var(--muted);font-size:.85rem}
+.review-a{margin:0 0 4px;color:var(--muted);font-size:.85rem}
+.review-why{margin:0;font-size:.85rem;color:var(--ink);background:var(--accent-soft);padding:8px 10px;border-radius:6px}
+
+.explain .why{margin:8px 0 0;font-size:.9rem;color:var(--ink);line-height:1.5}
 
 /* Home / setup screen */
 .setup{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
