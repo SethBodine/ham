@@ -10,7 +10,7 @@ pages_build_output_dir = "."
 # kept indefinitely until explicitly deleted.
 [[kv_namespaces]]
 binding = "LOGBOOK"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "df9dd4101a4547c3a57268933ae8a221"
 # preview_id = "REPLACE_WITH_A_SEPARATE_PREVIEW_NAMESPACE_ID"
 
 # The access key itself is NOT set here — set it as a Pages secret instead
