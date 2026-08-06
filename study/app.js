@@ -254,7 +254,7 @@
       if (state.mode === 'test' && state.answered && letter === state.selectedOption && !isCorrect) classes += ' incorrect';
       if (state.mode === 'exam' && state.selectedOption === letter) classes += ' picked';
 
-      var disabled = (state.mode === 'test' && state.answered) || state.mode === 'learn';
+      var disabled = (state.mode === 'test' && state.answered) || (state.mode === 'learn' && state.revealed);
       var btn = el('button', {
         class: classes, type: 'button', disabled: disabled
       }, [
@@ -263,6 +263,9 @@
       ]);
       if (state.mode === 'test' && !state.answered) {
         btn.addEventListener('click', function () { answerTest(letter); });
+      }
+      if (state.mode === 'learn' && !state.revealed) {
+        btn.addEventListener('click', revealLearnNow);
       }
       if (state.mode === 'exam') {
         btn.addEventListener('click', function () { answerExam(letter); });
