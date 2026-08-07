@@ -14,14 +14,16 @@
     { key: 'sigSent', label: 'Signal sent', type: 'text', placeholder: 'e.g. 59' },
     { key: 'notes', label: 'Notes', type: 'text' },
   ];
-  var COLUMN_ORDER = STANDARD_FIELDS.map(function (f) { return f.key; });
+  var STANDARD_KEYS = STANDARD_FIELDS.map(function (f) { return f.key; });
+  var RESERVED_KEYS = ['id', 'createdAt', 'updatedAt'];
 
   var state = {
     key: null,
     entries: [],
     settings: { stationCallsign: '' },
+    fieldDefs: [],       // [{key, label, type, maxLength}] — the custom field registry
     editingId: null,
-    extraFields: [], // [{key, value}] for the add/edit form
+    showNewFieldForm: false,
     error: null,
   };
 
@@ -44,11 +46,11 @@
   function api(path, opts) {
     opts = opts || {};
     var headers = Object.assign({ 'Authorization': 'Bearer ' + state.key }, opts.headers || {});
-    if (opts.body) headers['content-type'] = 'application/json';
+    if (opts.body !== undefined) headers['content-type'] = 'application/json';
     return fetch('/api' + path, {
       method: opts.method || 'GET',
       headers: headers,
-      body: opts.body ? JSON.stringify(opts.body) : undefined,
+      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
     }).then(function (r) {
       if (r.status === 401) {
         clearKey();
@@ -107,10 +109,11 @@
   function loadAndRender() {
     app.innerHTML = '';
     app.appendChild(el('p', { class: 'loading' }, ['Loading your log…']));
-    Promise.all([api('/entries'), api('/settings')])
+    Promise.all([api('/entries'), api('/settings'), api('/fields')])
       .then(function (results) {
         state.entries = results[0].entries || [];
         state.settings = results[1].settings || { stationCallsign: '' };
+        state.fieldDefs = results[2].fields || [];
         renderApp();
       })
       .catch(function (err) {
@@ -168,47 +171,59 @@
     });
     panel.appendChild(grid);
 
-    // Extra / custom fields
-    if (editing) {
-      state.extraFields = Object.keys(editing)
-        .filter(function (k) { return COLUMN_ORDER.indexOf(k) === -1 && ['id', 'createdAt', 'updatedAt'].indexOf(k) === -1; })
-        .map(function (k) { return { key: k, value: String(editing[k]) }; });
+    // Registry-defined custom fields — always shown, populated from the entry when editing.
+    var registryInputs = {};
+    if (state.fieldDefs.length) {
+      panel.appendChild(el('h3', { style: 'margin:18px 0 8px;font-size:.92rem' }, ['Custom fields']));
+      var cgrid = el('div', { class: 'grid cols-4' });
+      state.fieldDefs.forEach(function (f) {
+        var htmlType = f.type === 'number' ? 'number' : f.type === 'date' ? 'date' : 'text';
+        var attrs = { type: htmlType, id: 'cf-' + f.key };
+        if (f.type === 'text' && f.maxLength) attrs.maxlength = String(f.maxLength);
+        var input = el('input', attrs);
+        input.value = editing ? (editing[f.key] !== undefined && editing[f.key] !== null ? String(editing[f.key]) : '') : '';
+        registryInputs[f.key] = input;
+        cgrid.appendChild(el('div', { class: 'field' }, [
+          el('label', { for: 'cf-' + f.key }, [f.label]),
+          input,
+        ]));
+      });
+      panel.appendChild(cgrid);
     }
 
-    var extraWrap = el('div', { class: 'extra-fields' });
-    function renderExtraRows() {
-      extraWrap.innerHTML = '';
-      state.extraFields.forEach(function (pair, idx) {
-        var kInput = el('input', { type: 'text', placeholder: 'Field name' });
-        kInput.value = pair.key;
-        var vInput = el('input', { type: 'text', placeholder: 'Value' });
-        vInput.value = pair.value;
-        kInput.addEventListener('input', function () { pair.key = kInput.value; });
-        vInput.addEventListener('input', function () { pair.value = vInput.value; });
-        var removeBtn = el('button', {
-          class: 'btn secondary small', type: 'button',
-          onclick: function () { state.extraFields.splice(idx, 1); renderExtraRows(); }
-        }, ['Remove']);
-        extraWrap.appendChild(el('div', { class: 'extra-field-row' }, [kInput, vInput, removeBtn]));
-      });
+    // Legacy fields: present on this entry but no longer in the registry (i.e. their
+    // definition was deleted). Shown read-only with a note; saving this record removes them.
+    var legacyKeys = [];
+    if (editing) {
+      var knownKeys = STANDARD_KEYS.concat(RESERVED_KEYS).concat(state.fieldDefs.map(function (f) { return f.key; }));
+      legacyKeys = Object.keys(editing).filter(function (k) { return knownKeys.indexOf(k) === -1; });
     }
-    renderExtraRows();
-    panel.appendChild(el('label', {}, ['Additional fields']));
-    panel.appendChild(extraWrap);
-    panel.appendChild(el('button', {
-      class: 'btn secondary small', type: 'button', style: 'margin-top:8px',
-      onclick: function () { state.extraFields.push({ key: '', value: '' }); renderExtraRows(); }
-    }, ['+ Add field']));
+    if (legacyKeys.length) {
+      var legacyBox = el('div', { class: 'legacy-fields' });
+      legacyBox.appendChild(el('p', { class: 'muted', style: 'margin:0 0 6px' }, [
+        'These fields were removed from the field list. Saving this contact will remove them from it.'
+      ]));
+      legacyKeys.forEach(function (k) {
+        legacyBox.appendChild(el('div', { class: 'legacy-row' }, [
+          el('span', { class: 'legacy-key' }, [k]),
+          el('span', { class: 'legacy-val' }, [String(editing[k])]),
+        ]));
+      });
+      panel.appendChild(legacyBox);
+    }
+
+    // "+ Add field" — define a brand new custom field (name, type, char cap for text).
+    panel.appendChild(renderNewFieldControl());
 
     var actions = el('div', { style: 'margin-top:16px;display:flex;gap:10px' });
     actions.appendChild(el('button', {
       class: 'btn', type: 'button',
-      onclick: function () { submitForm(inputs, editing); }
+      onclick: function () { submitForm(inputs, registryInputs, legacyKeys, editing); }
     }, [editing ? 'Save changes' : 'Add contact']));
     if (editing) {
       actions.appendChild(el('button', {
         class: 'btn secondary', type: 'button',
-        onclick: function () { state.editingId = null; state.extraFields = []; renderApp(); }
+        onclick: function () { state.editingId = null; renderApp(); }
       }, ['Cancel']));
     }
     panel.appendChild(actions);
@@ -216,16 +231,88 @@
     return panel;
   }
 
-  function submitForm(inputs, editing) {
+  function renderNewFieldControl() {
+    var wrap = el('div', { style: 'margin-top:16px' });
+    if (!state.showNewFieldForm) {
+      wrap.appendChild(el('button', {
+        class: 'btn secondary small', type: 'button',
+        onclick: function () { state.showNewFieldForm = true; renderApp(); }
+      }, ['+ Add field']));
+      return wrap;
+    }
+
+    var nameInput = el('input', { type: 'text', placeholder: 'Field name (e.g. Weather)', maxlength: '64' });
+    var typeSelect = el('select', {});
+    [['text', 'Text'], ['number', 'Number'], ['date', 'Date']].forEach(function (pair) {
+      typeSelect.appendChild(el('option', { value: pair[0] }, [pair[1]]));
+    });
+    var maxLenInput = el('input', { type: 'number', placeholder: 'Max characters (default 200)', min: '1', max: '2000' });
+    var maxLenField = el('div', { class: 'field', style: 'max-width:220px' }, [
+      el('label', {}, ['Character cap (text fields only)']),
+      maxLenInput,
+    ]);
+    typeSelect.addEventListener('change', function () {
+      maxLenField.style.display = typeSelect.value === 'text' ? 'block' : 'none';
+    });
+
+    var errorSlot = el('div');
+
+    var row = el('div', { class: 'new-field-row' }, [
+      el('div', { class: 'field', style: 'max-width:220px' }, [el('label', {}, ['Field name']), nameInput]),
+      el('div', { class: 'field', style: 'max-width:140px' }, [el('label', {}, ['Type']), typeSelect]),
+      maxLenField,
+    ]);
+
+    var createBtn = el('button', {
+      class: 'btn small', type: 'button',
+      onclick: function () {
+        var key = nameInput.value.trim();
+        if (!key) { nameInput.focus(); return; }
+        var body = { key: key, type: typeSelect.value };
+        if (typeSelect.value === 'text' && maxLenInput.value) body.maxLength = parseInt(maxLenInput.value, 10);
+        createBtn.disabled = true;
+        api('/fields', { method: 'POST', body: body })
+          .then(function (r) {
+            state.fieldDefs = r.fields;
+            state.showNewFieldForm = false;
+            renderApp();
+          })
+          .catch(function (err) {
+            createBtn.disabled = false;
+            if (err.message !== 'unauthorized') {
+              errorSlot.innerHTML = '';
+              errorSlot.appendChild(el('div', { class: 'error', style: 'margin-top:8px' }, [err.message]));
+            }
+          });
+      }
+    }, ['Create field']);
+    var cancelBtn = el('button', {
+      class: 'btn secondary small', type: 'button',
+      onclick: function () { state.showNewFieldForm = false; renderApp(); }
+    }, ['Cancel']);
+
+    wrap.appendChild(el('div', { class: 'panel-inset' }, [row, el('div', { style: 'display:flex;gap:8px;margin-top:10px' }, [createBtn, cancelBtn]), errorSlot]));
+    return wrap;
+  }
+
+  function submitForm(inputs, registryInputs, legacyKeys, editing) {
     var payload = {};
     STANDARD_FIELDS.forEach(function (f) {
       var v = inputs[f.key].value.trim();
       if (v) payload[f.key] = v;
     });
-    state.extraFields.forEach(function (pair) {
-      var k = pair.key.trim();
-      if (k) payload[k] = pair.value;
+    state.fieldDefs.forEach(function (f) {
+      var raw = registryInputs[f.key] ? registryInputs[f.key].value.trim() : '';
+      if (editing) {
+        // Editing: send the value even if blank, so a field can be intentionally cleared.
+        payload[f.key] = raw === '' ? null : (f.type === 'number' ? Number(raw) : raw);
+      } else if (raw !== '') {
+        payload[f.key] = f.type === 'number' ? Number(raw) : raw;
+      }
     });
+    if (editing && legacyKeys && legacyKeys.length) {
+      legacyKeys.forEach(function (k) { payload[k] = null; });
+    }
 
     var req = editing
       ? api('/entries/' + editing.id, { method: 'PUT', body: payload })
@@ -239,7 +326,6 @@
         state.entries.push(entry);
       }
       state.editingId = null;
-      state.extraFields = [];
       renderApp();
     }).catch(function (err) {
       if (err.message !== 'unauthorized') alert('Could not save: ' + err.message);
@@ -256,25 +342,39 @@
       return panel;
     }
 
-    // Determine columns: standard fields first, then any extra fields seen anywhere, in first-seen order.
-    var extraCols = [];
+    // Columns: standard fields, then registry fields (in registry order), then any
+    // leftover "legacy" keys still present on some entry but no longer in the registry.
+    var registryKeys = state.fieldDefs.map(function (f) { return f.key; });
+    var knownKeys = STANDARD_KEYS.concat(RESERVED_KEYS).concat(registryKeys);
+    var legacyCols = [];
     state.entries.forEach(function (e) {
       Object.keys(e).forEach(function (k) {
-        if (COLUMN_ORDER.indexOf(k) === -1 && ['id', 'createdAt', 'updatedAt'].indexOf(k) === -1 && extraCols.indexOf(k) === -1) {
-          extraCols.push(k);
-        }
+        if (knownKeys.indexOf(k) === -1 && legacyCols.indexOf(k) === -1) legacyCols.push(k);
       });
     });
-    var columns = STANDARD_FIELDS.map(function (f) { return f; }).concat(
-      extraCols.map(function (k) { return { key: k, label: k }; })
-    );
+    var columns = STANDARD_FIELDS.slice()
+      .concat(state.fieldDefs.map(function (f) { return { key: f.key, label: f.label, custom: true }; }))
+      .concat(legacyCols.map(function (k) { return { key: k, label: k, legacy: true }; }));
 
     var scroll = el('div', { class: 'table-scroll' });
     var table = el('table');
-    var thead = el('thead', {}, [
-      el('tr', {}, ['#'].concat(columns.map(function (c) { return c.label; })).concat(['']).map(function (t) { return el('th', {}, [t]); }))
-    ]);
-    table.appendChild(thead);
+
+    var headerCells = [el('th', {}, ['#'])];
+    columns.forEach(function (c) {
+      var cellChildren = [document.createTextNode(c.label)];
+      if (c.custom) {
+        cellChildren.push(el('button', {
+          class: 'col-delete', type: 'button', title: 'Remove this field from the field list',
+          onclick: function () { deleteFieldDef(c.key); }
+        }, ['×']));
+      }
+      if (c.legacy) {
+        cellChildren.push(el('span', { class: 'col-legacy-mark', title: 'Removed field — clears next time each contact is edited & saved' }, ['†']));
+      }
+      headerCells.push(el('th', {}, cellChildren));
+    });
+    headerCells.push(el('th', {}, ['']));
+    table.appendChild(el('thead', {}, [el('tr', {}, headerCells)]));
 
     var tbody = el('tbody');
     var sorted = state.entries.slice().sort(function (a, b) {
@@ -287,7 +387,7 @@
         cells.push(el('td', {}, [v === undefined || v === null || v === '' ? '—' : String(v)]));
       });
       var actions = el('td', { class: 'actions-cell' }, [
-        el('button', { class: 'btn secondary small', type: 'button', onclick: function () { state.editingId = entry.id; state.extraFields = []; renderApp(); window.scrollTo(0, 0); } }, ['Edit']),
+        el('button', { class: 'btn secondary small', type: 'button', onclick: function () { state.editingId = entry.id; renderApp(); window.scrollTo(0, 0); } }, ['Edit']),
         el('button', { class: 'btn danger small', type: 'button', onclick: function () { deleteEntry(entry.id); } }, ['Delete']),
       ]);
       cells.push(actions);
@@ -296,7 +396,29 @@
     table.appendChild(tbody);
     scroll.appendChild(table);
     panel.appendChild(scroll);
+    if (legacyCols.length) {
+      panel.appendChild(el('p', { class: 'muted', style: 'font-size:.78rem;margin-top:10px' }, [
+        '† marks a field that was removed from the field list. Its old values will clear from each contact the next time that contact is edited and saved.'
+      ]));
+    }
     return panel;
+  }
+
+  function deleteFieldDef(key) {
+    var affected = state.entries.filter(function (e) { return Object.prototype.hasOwnProperty.call(e, key) && e[key] !== undefined && e[key] !== null && e[key] !== ''; }).length;
+    var msg = 'Remove "' + key + '" from the field list? It will no longer appear on new or edited contacts. ' +
+      (affected > 0
+        ? affected + ' existing contact' + (affected === 1 ? '' : 's') + ' currently ' + (affected === 1 ? 'has' : 'have') + ' a value in this field — that value will stay until each contact is next edited and saved, at which point it will be removed.'
+        : 'No existing contacts currently have a value in this field.');
+    if (!confirm(msg)) return;
+    api('/fields/' + encodeURIComponent(key), { method: 'DELETE' })
+      .then(function (r) {
+        state.fieldDefs = r.fields;
+        renderApp();
+      })
+      .catch(function (err) {
+        if (err.message !== 'unauthorized') alert('Could not remove field: ' + err.message);
+      });
   }
 
   function deleteEntry(id) {

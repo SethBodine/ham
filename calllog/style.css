@@ -57,3 +57,18 @@ tbody tr:hover{background:var(--accent-soft)}
 .extra-field-row input{flex:1}
 .muted{color:var(--muted);font-size:.82rem}
 .toprow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+
+.legacy-fields{margin-top:16px;padding:12px 14px;border:1px dashed var(--bad);border-radius:8px;background:var(--bad-bg)}
+.legacy-row{display:flex;gap:8px;font-size:.85rem;padding:3px 0}
+.legacy-key{font-weight:600;color:var(--ink)}
+.legacy-val{color:var(--muted)}
+
+.panel-inset{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px;margin-top:8px}
+.new-field-row{display:flex;gap:12px;flex-wrap:wrap}
+
+.col-delete{
+  border:none;background:none;color:var(--bad);cursor:pointer;font-size:.9rem;font-weight:700;
+  margin-left:6px;padding:0 2px;line-height:1;vertical-align:middle;
+}
+.col-delete:hover{text-decoration:underline}
+.col-legacy-mark{margin-left:4px;color:var(--bad);cursor:help}

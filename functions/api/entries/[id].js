@@ -1,15 +1,16 @@
-import { requireAuth, jsonResponse, badRequest } from '../../_auth.js';
+import { requireAuth, jsonResponse, badRequest, getFieldRegistry } from '../../_auth.js';
 
 const MAX_BODY_BYTES = 20 * 1024;
 const RESERVED_KEYS = new Set(['id', 'createdAt', 'updatedAt']);
 const ID_PATTERN = /^[a-f0-9-]{36}$/i; // crypto.randomUUID() shape
+const DEFAULT_MAX_LEN = 2000;
 
 function sanitizeString(v, maxLen) {
   if (typeof v !== 'string') return '';
   return v.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').slice(0, maxLen);
 }
 
-function sanitizeEntryFields(input) {
+function sanitizeEntryFields(input, fieldRegistry) {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) return null;
   const out = {};
   let count = 0;
@@ -18,8 +19,11 @@ function sanitizeEntryFields(input) {
     if (count >= 60) break;
     const safeKey = sanitizeString(key, 64);
     if (!safeKey) continue;
-    if (typeof value === 'string') out[safeKey] = sanitizeString(value, 2000);
-    else if (typeof value === 'number' || typeof value === 'boolean' || value === null) out[safeKey] = value;
+    if (typeof value === 'string') {
+      const def = fieldRegistry[safeKey];
+      const cap = def && def.type === 'text' && def.maxLength ? Math.min(def.maxLength, DEFAULT_MAX_LEN) : DEFAULT_MAX_LEN;
+      out[safeKey] = sanitizeString(value, cap);
+    } else if (typeof value === 'number' || typeof value === 'boolean' || value === null) out[safeKey] = value;
     else continue;
     count++;
   }
@@ -43,7 +47,8 @@ export async function onRequestPut(context) {
   let parsed;
   try { parsed = JSON.parse(rawBody); } catch (e) { return badRequest('Invalid JSON.'); }
 
-  const fields = sanitizeEntryFields(parsed);
+  const fieldRegistry = await getFieldRegistry(env, auth.operatorId);
+  const fields = sanitizeEntryFields(parsed, fieldRegistry);
   if (fields === null) return badRequest('Entry must be a JSON object.');
 
   const key = `entry:${auth.operatorId}:${id}`;
@@ -53,7 +58,12 @@ export async function onRequestPut(context) {
   let existing;
   try { existing = JSON.parse(existingRaw); } catch (e) { existing = {}; }
 
-  const updated = Object.assign({}, existing, fields, {
+  const merged = Object.assign({}, existing, fields);
+  Object.keys(fields).forEach((k) => {
+    if (fields[k] === null) delete merged[k];
+  });
+
+  const updated = Object.assign({}, merged, {
     id,
     createdAt: existing.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),

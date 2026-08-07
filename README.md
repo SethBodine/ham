@@ -63,7 +63,17 @@ robots.txt            keeps /calllog out of search indexes
 
 - `study/data/questions.json` holds the full 600-question NZART bank,
   extracted from the NZART question-bank PDF, which states the questions
-  are in the public domain.
+  are in the public domain. Each question also carries an `explanation`
+  field (the "why" behind the correct answer) and, for the ~70 questions
+  that reference a figure in the original PDF (block diagrams, transistor
+  pinouts, antenna diagrams), a `diagram` field naming one of the 16
+  reusable diagrams in `study/data/diagrams.json`.
+- `study/data/diagrams.json` holds those 16 diagrams as inline SVG strings,
+  generated programmatically (see the layout logic, not committed, used to
+  build them) so their box/arrow coordinates are guaranteed consistent.
+  They're schematic reconstructions of NZART's figures (matching block
+  names, signal flow, and answer-key-consistent pin labelling) rather than
+  pixel copies of the original artwork.
 - Each question has an `id` like `"27-14"` (topic 27, question 14 in that
   topic), the four options, and the correct answer letter. There are no
   official worked explanations in the source PDF — "Test" mode shows the
@@ -91,12 +101,28 @@ robots.txt            keeps /calllog out of search indexes
   there's one namespace — but adding a second key later (e.g. a per-person
   `LOG_API_KEY_2`) would just start writing to a second namespace with **no
   data migration needed**.
+- **Custom fields have a real schema, not just per-entry JSON.** Each custom
+  field is defined once — name, type (`text` / `number` / `date`), and for
+  text fields, a character cap — and stored in KV at `fields:<operatorId>`
+  via `functions/api/fields.js` (`GET`/`POST`) and
+  `functions/api/fields/[key].js` (`DELETE`). Defining a field makes it show
+  up as its own input on every future Add/Edit form automatically; the
+  `entries` endpoints look up this registry on every write and enforce each
+  field's own character cap server-side (not just via the HTML `maxlength`
+  attribute, which isn't a real boundary).
+- **Deleting a field is non-destructive to existing data.** `DELETE
+  /api/fields/<key>` only removes the *definition* — it does not touch any
+  entry. A contact that already has a value in that field keeps it (shown
+  in the table with a "†" marker) until that specific contact is next
+  edited and saved, at which point the field is dropped from it (the
+  frontend sends that key as `null`, which the `PUT` handler treats as "delete
+  this key from the stored entry" rather than storing a `null` value).
 - **Flexible fields:** entries always keep `id`, `createdAt`, `updatedAt`,
   plus whatever fields you send (`callsign`, `date`, `time`, `frequency`,
-  `mode`, `sigRcvd`, `sigSent`, `notes`, or any custom field you add in the
-  UI). Anything you haven't filled in for a given contact just doesn't
-  exist on that record — the table shows "—" for it rather than treating
-  it as an error.
+  `mode`, `sigRcvd`, `sigSent`, `notes`, or any registered custom field).
+  Anything you haven't filled in for a given contact just doesn't exist on
+  that record — the table shows "—" for it rather than treating it as an
+  error.
 - **No TTL** — `env.LOGBOOK.put()` is called without an `expirationTtl`,
   so entries persist until you explicitly delete them.
 

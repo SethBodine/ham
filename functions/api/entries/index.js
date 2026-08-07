@@ -1,8 +1,9 @@
-import { requireAuth, jsonResponse, badRequest } from '../../_auth.js';
+import { requireAuth, jsonResponse, badRequest, getFieldRegistry } from '../../_auth.js';
 
 const MAX_BODY_BYTES = 20 * 1024; // 20KB per entry is generous for a log line + extra fields
 const MAX_ENTRIES_LIST = 5000;    // sanity ceiling on a single list operation
 const RESERVED_KEYS = new Set(['id', 'createdAt', 'updatedAt']);
+const DEFAULT_MAX_LEN = 2000;
 
 function sanitizeString(v, maxLen) {
   if (typeof v !== 'string') return '';
@@ -10,7 +11,7 @@ function sanitizeString(v, maxLen) {
   return v.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').slice(0, maxLen);
 }
 
-function sanitizeEntryFields(input) {
+function sanitizeEntryFields(input, fieldRegistry) {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
     return null;
   }
@@ -22,7 +23,9 @@ function sanitizeEntryFields(input) {
     const safeKey = sanitizeString(key, 64);
     if (!safeKey) continue;
     if (typeof value === 'string') {
-      out[safeKey] = sanitizeString(value, 2000);
+      const def = fieldRegistry[safeKey];
+      const cap = def && def.type === 'text' && def.maxLength ? Math.min(def.maxLength, DEFAULT_MAX_LEN) : DEFAULT_MAX_LEN;
+      out[safeKey] = sanitizeString(value, cap);
     } else if (typeof value === 'number' || typeof value === 'boolean' || value === null) {
       out[safeKey] = value;
     } else {
@@ -79,7 +82,8 @@ export async function onRequestPost(context) {
     return badRequest('Invalid JSON.');
   }
 
-  const fields = sanitizeEntryFields(parsed);
+  const fieldRegistry = await getFieldRegistry(env, auth.operatorId);
+  const fields = sanitizeEntryFields(parsed, fieldRegistry);
   if (fields === null) return badRequest('Entry must be a JSON object.');
 
   const id = crypto.randomUUID();

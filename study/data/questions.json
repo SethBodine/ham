@@ -3511,7 +3511,8 @@
       "d": "source of a junction FET"
     },
     "answer": "c",
-    "explanation": "This question refers to a labelled transistor pin diagram in the question bank (not reproducible here); per NZART's answer key, position 2 is the base of the pnp transistor shown. Cross-check against the printed diagram when studying this one."
+    "explanation": "This question refers to a labelled transistor pin diagram in the question bank (not reproducible here); per NZART's answer key, position 2 is the base of the pnp transistor shown. Cross-check against the printed diagram when studying this one.",
+    "diagram": "transistor-npn"
   },
   {
     "id": "12-2",
@@ -3525,7 +3526,8 @@
       "d": "base of an npn transistor"
     },
     "answer": "b",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 3 is the collector of the npn transistor shown."
+    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 3 is the collector of the npn transistor shown.",
+    "diagram": "transistor-npn"
   },
   {
     "id": "12-3",
@@ -3539,7 +3541,8 @@
       "d": "emitter of a pnp transistor"
     },
     "answer": "a",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the base of the pnp transistor shown."
+    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the base of the pnp transistor shown.",
+    "diagram": "transistor-pnp"
   },
   {
     "id": "12-4",
@@ -3553,7 +3556,8 @@
       "d": "emitter of a pnp transistor"
     },
     "answer": "d",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 1 is the emitter of the pnp transistor shown."
+    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 1 is the emitter of the pnp transistor shown.",
+    "diagram": "transistor-pnp"
   },
   {
     "id": "12-5",
@@ -3567,7 +3571,8 @@
       "d": "base of a pnp transistor"
     },
     "answer": "c",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the gate of the n-channel junction FET shown."
+    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the gate of the n-channel junction FET shown.",
+    "diagram": "fet-nchannel"
   },
   {
     "id": "12-6",
@@ -3581,7 +3586,8 @@
       "d": "drain of an n-channel junction FET"
     },
     "answer": "d",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 3 is the drain of the n-channel junction FET shown."
+    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 3 is the drain of the n-channel junction FET shown.",
+    "diagram": "fet-nchannel"
   },
   {
     "id": "12-7",
@@ -3595,7 +3601,8 @@
       "d": "cathode of a dual diode"
     },
     "answer": "a",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the gate of the MOSFET shown."
+    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the gate of the MOSFET shown.",
+    "diagram": "mosfet-dualgate"
   },
   {
     "id": "12-8",
@@ -3609,7 +3616,8 @@
       "d": "dual gate MOSFET"
     },
     "answer": "d",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, the symbol shown (two gates, drain, source) represents a dual gate MOSFET, commonly used as an RF mixer/amplifier."
+    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, the symbol shown (two gates, drain, source) represents a dual gate MOSFET, commonly used as an RF mixer/amplifier.",
+    "diagram": "mosfet-dualgate"
   },
   {
     "id": "12-9",
@@ -3623,7 +3631,8 @@
       "d": "screen grid of a pentode"
     },
     "answer": "c",
-    "explanation": "Refers to a labelled valve diagram in the question bank; per NZART's answer key, position 3 is the grid of the tetrode shown."
+    "explanation": "Refers to a labelled valve diagram in the question bank; per NZART's answer key, position 3 is the grid of the tetrode shown.",
+    "diagram": "tetrode-valve"
   },
   {
     "id": "12-10",
@@ -3637,7 +3646,8 @@
       "d": "grid of a triode"
     },
     "answer": "b",
-    "explanation": "Refers to a labelled valve diagram in the question bank; per NZART's answer key, position 5 is the screen grid of the tetrode shown."
+    "explanation": "Refers to a labelled valve diagram in the question bank; per NZART's answer key, position 5 is the screen grid of the tetrode shown.",
+    "diagram": "tetrode-valve"
   },
   {
     "id": "13-1",
@@ -3931,7 +3941,8 @@
       "d": "a push-pull amplifier to cancel second harmonic distortion"
     },
     "answer": "b",
-    "explanation": "In the HF station block diagram, the linear amplifier is an optional stage switched in only when extra power output is needed."
+    "explanation": "In the HF station block diagram, the linear amplifier is an optional stage switched in only when extra power output is needed.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-2",
@@ -3945,7 +3956,8 @@
       "d": "the linear amplifier may be optionally switched out of circuit to reduce output power"
     },
     "answer": "d",
-    "explanation": "The bypass path shown around the linear amplifier lets it be switched out of circuit entirely, reducing output power when full amplifier power isn't wanted."
+    "explanation": "The bypass path shown around the linear amplifier lets it be switched out of circuit entirely, reducing output power when full amplifier power isn't wanted.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-3",
@@ -3959,7 +3971,8 @@
       "d": "emphasise low-speed Morse code output"
     },
     "answer": "a",
-    "explanation": "The low pass filter must be rated to carry the station's full power output, since all transmitted power passes through it."
+    "explanation": "The low pass filter must be rated to carry the station's full power output, since all transmitted power passes through it.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-4",
@@ -3973,7 +3986,8 @@
       "d": "short wave rectifier to protect against lightning strikes"
     },
     "answer": "c",
-    "explanation": "The SWR bridge is the device that monitors the standing-wave-ratio on the feedline to the antenna."
+    "explanation": "The SWR bridge is the device that monitors the standing-wave-ratio on the feedline to the antenna.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-5",
@@ -3987,7 +4001,8 @@
       "d": "switches surplus output power from the antenna to the dummy load to avoid distortion."
     },
     "answer": "a",
-    "explanation": "The antenna switch's job is to switch the transmitter output to a dummy load for safe tune-up without radiating a signal."
+    "explanation": "The antenna switch's job is to switch the transmitter output to a dummy load for safe tune-up without radiating a signal.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-6",
@@ -4001,7 +4016,8 @@
       "d": "adjusts the impedance of the antenna system seen at the transceiver output"
     },
     "answer": "d",
-    "explanation": "The antenna tuner adjusts the impedance seen at the transceiver's output, so the transceiver sees the load impedance it expects."
+    "explanation": "The antenna tuner adjusts the impedance seen at the transceiver's output, so the transceiver sees the load impedance it expects.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-7",
@@ -4015,7 +4031,8 @@
       "d": "an additional load used to compensate for a badly-tuned antenna system"
     },
     "answer": "a",
-    "explanation": "A dummy load lets you adjust/tune a transmitter without radiating a signal that could interfere with other operators."
+    "explanation": "A dummy load lets you adjust/tune a transmitter without radiating a signal that could interfere with other operators.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-8",
@@ -4029,7 +4046,8 @@
       "d": "short length of balanced ladder-line"
     },
     "answer": "b",
-    "explanation": "The link between the SWR bridge and antenna switch in a typical HF station is ordinary coaxial cable."
+    "explanation": "The link between the SWR bridge and antenna switch in a typical HF station is ordinary coaxial cable.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-9",
@@ -4043,7 +4061,8 @@
       "d": "the antenna is very short compared to a wavelength"
     },
     "answer": "a",
-    "explanation": "An antenna tuner isn't needed when the antenna's input impedance already matches the transceiver's output impedance — there's nothing to correct."
+    "explanation": "An antenna tuner isn't needed when the antenna's input impedance already matches the transceiver's output impedance — there's nothing to correct.",
+    "diagram": "hf-station"
   },
   {
     "id": "15-10",
@@ -4057,7 +4076,8 @@
       "d": "an iron-cored transformer"
     },
     "answer": "c",
-    "explanation": "The antenna tuner connects to the antenna itself via standard 50 ohm coaxial cable, matching the rest of the RF chain."
+    "explanation": "The antenna tuner connects to the antenna itself via standard 50 ohm coaxial cable, matching the rest of the RF chain.",
+    "diagram": "hf-station"
   },
   {
     "id": "16-1",
@@ -4071,7 +4091,8 @@
       "d": "changes the signal frequency"
     },
     "answer": "c",
-    "explanation": "The RF amplifier's job is to increase (boost) the level of the weak incoming signal from the antenna."
+    "explanation": "The RF amplifier's job is to increase (boost) the level of the weak incoming signal from the antenna.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-2",
@@ -4085,7 +4106,8 @@
       "d": "inserts a carrier wave to produce a true FM signal"
     },
     "answer": "a",
-    "explanation": "The mixer combines the incoming RF signal with a local oscillator signal to produce a new signal at the intermediate frequency (IF)."
+    "explanation": "The mixer combines the incoming RF signal with a local oscillator signal to produce a new signal at the intermediate frequency (IF).",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-3",
@@ -4099,7 +4121,8 @@
       "d": "at a low audio frequency"
     },
     "answer": "c",
-    "explanation": "The local oscillator runs at a frequency offset from both the incoming signal and the IF, so mixing the two produces the desired IF difference frequency."
+    "explanation": "The local oscillator runs at a frequency offset from both the incoming signal and the IF, so mixing the two produces the desired IF difference frequency.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-4",
@@ -4113,7 +4136,8 @@
       "d": "broadcast band signals"
     },
     "answer": "b",
-    "explanation": "The filter after the mixer rejects unwanted mixer output products, passing only the wanted IF signal through."
+    "explanation": "The filter after the mixer rejects unwanted mixer output products, passing only the wanted IF signal through.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-5",
@@ -4127,7 +4151,8 @@
       "d": "intermediate frequency amplifier"
     },
     "answer": "d",
-    "explanation": "'IF' stands for intermediate frequency — the fixed frequency the signal is converted to for further amplification and filtering."
+    "explanation": "'IF' stands for intermediate frequency — the fixed frequency the signal is converted to for further amplification and filtering.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-6",
@@ -4141,7 +4166,8 @@
       "d": "translates signals to audio frequencies"
     },
     "answer": "d",
-    "explanation": "The product detector translates the IF signal down to audio frequencies that can be heard."
+    "explanation": "The product detector translates the IF signal down to audio frequencies that can be heard.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-7",
@@ -4155,7 +4181,8 @@
       "d": "restores ambiance to the audio"
     },
     "answer": "b",
-    "explanation": "The AF (audio frequency) amplifier boosts the audio-frequency signal after detection, up to a level suitable for a speaker or headphones."
+    "explanation": "The AF (audio frequency) amplifier boosts the audio-frequency signal after detection, up to a level suitable for a speaker or headphones.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-8",
@@ -4169,7 +4196,8 @@
       "d": "band filter oscillator"
     },
     "answer": "c",
-    "explanation": "BFO stands for beat frequency oscillator, used to produce the audio tone needed to demodulate CW and SSB signals."
+    "explanation": "BFO stands for beat frequency oscillator, used to produce the audio tone needed to demodulate CW and SSB signals.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-9",
@@ -4183,7 +4211,8 @@
       "d": "mixer"
     },
     "answer": "b",
-    "explanation": "Most of a superhet receiver's overall gain typically comes from the IF amplifier stage(s), where narrowband amplification is most efficient."
+    "explanation": "Most of a superhet receiver's overall gain typically comes from the IF amplifier stage(s), where narrowband amplification is most efficient.",
+    "diagram": "rx-ssb-cw"
   },
   {
     "id": "16-10",
@@ -4197,7 +4226,8 @@
       "d": "changes the signal frequency"
     },
     "answer": "c",
-    "explanation": "A good RF amplifier is designed to add as little of its own internally-generated noise as possible, preserving the weak incoming signal."
+    "explanation": "A good RF amplifier is designed to add as little of its own internally-generated noise as possible, preserving the weak incoming signal.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-11",
@@ -4211,7 +4241,8 @@
       "d": "limits the noise on the signal"
     },
     "answer": "a",
-    "explanation": "The mixer's core function is to change (translate) the signal's frequency, from the incoming RF to the intermediate frequency."
+    "explanation": "The mixer's core function is to change (translate) the signal's frequency, from the incoming RF to the intermediate frequency.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-12",
@@ -4225,7 +4256,8 @@
       "d": "detailed selective processing"
     },
     "answer": "b",
-    "explanation": "DSP stands for digital signal processing — the digital manipulation of the signal after analogue-to-digital conversion."
+    "explanation": "DSP stands for digital signal processing — the digital manipulation of the signal after analogue-to-digital conversion.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-13",
@@ -4239,7 +4271,8 @@
       "d": "removes phase variations from the signal"
     },
     "answer": "a",
-    "explanation": "In an FM receiver, the limiter strips off unwanted amplitude variations from the signal, leaving only the frequency variations that carry the information."
+    "explanation": "In an FM receiver, the limiter strips off unwanted amplitude variations from the signal, leaving only the frequency variations that carry the information.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-14",
@@ -4253,7 +4286,8 @@
       "d": "low-pass filter"
     },
     "answer": "b",
-    "explanation": "A phase-locked loop is a common way to implement the frequency demodulator stage in an FM receiver."
+    "explanation": "A phase-locked loop is a common way to implement the frequency demodulator stage in an FM receiver.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-15",
@@ -4267,7 +4301,8 @@
       "d": "must be fitted with a tone control"
     },
     "answer": "b",
-    "explanation": "The AF amplifier in an FM receiver amplifies the recovered speech-frequency audio signal."
+    "explanation": "The AF amplifier in an FM receiver amplifies the recovered speech-frequency audio signal.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-16",
@@ -4281,7 +4316,8 @@
       "d": "IF amplifier"
     },
     "answer": "a",
-    "explanation": "The audio (volume) gain control is naturally associated with the AF amplifier block, which sets the loudness of the output."
+    "explanation": "The audio (volume) gain control is naturally associated with the AF amplifier block, which sets the loudness of the output.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-17",
@@ -4295,7 +4331,8 @@
       "d": "filter"
     },
     "answer": "d",
-    "explanation": "In this FM receiver, the filter stage is what mainly sets the overall selectivity (how well close-in signals are separated)."
+    "explanation": "In this FM receiver, the filter stage is what mainly sets the overall selectivity (how well close-in signals are separated).",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-18",
@@ -4309,7 +4346,8 @@
       "d": "128 kHz"
     },
     "answer": "b",
-    "explanation": "A typical FM communications receiver's IF filter bandwidth is around 10 kHz, wide enough for voice FM's deviation."
+    "explanation": "A typical FM communications receiver's IF filter bandwidth is around 10 kHz, wide enough for voice FM's deviation.",
+    "diagram": "rx-fm"
   },
   {
     "id": "16-19",
@@ -4323,7 +4361,8 @@
       "d": "Audio Amplifier"
     },
     "answer": "b",
-    "explanation": "In an SDR, demodulation (extracting the information) happens in the DSP block, after the signal has been digitised."
+    "explanation": "In an SDR, demodulation (extracting the information) happens in the DSP block, after the signal has been digitised.",
+    "diagram": "rx-sdr"
   },
   {
     "id": "16-20",
@@ -4337,7 +4376,8 @@
       "d": "DSP"
     },
     "answer": "d",
-    "explanation": "Because an SDR's processing is done in software, new demodulation/modulation behaviour is loaded or changed in the DSP block."
+    "explanation": "Because an SDR's processing is done in software, new demodulation/modulation behaviour is loaded or changed in the DSP block.",
+    "diagram": "rx-sdr"
   },
   {
     "id": "17-1",
@@ -4771,7 +4811,8 @@
       "d": "may have a calibrated dial"
     },
     "answer": "c",
-    "explanation": "A crystal oscillator is used specifically because it gives excellent frequency stability, unlike a free-running VFO."
+    "explanation": "A crystal oscillator is used specifically because it gives excellent frequency stability, unlike a free-running VFO.",
+    "diagram": "tx-ssb"
   },
   {
     "id": "18-2",
@@ -4785,7 +4826,8 @@
       "d": "balances the standing wave ratio"
     },
     "answer": "b",
-    "explanation": "The balanced modulator's job is to perform double sideband suppressed carrier modulation — combining audio and RF while cancelling the carrier."
+    "explanation": "The balanced modulator's job is to perform double sideband suppressed carrier modulation — combining audio and RF while cancelling the carrier.",
+    "diagram": "tx-ssb"
   },
   {
     "id": "18-3",
@@ -4799,7 +4841,8 @@
       "d": "removes the carrier component from the modulated signal"
     },
     "answer": "c",
-    "explanation": "The filter after the balanced modulator removes one sideband, leaving the single sideband (SSB) signal."
+    "explanation": "The filter after the balanced modulator removes one sideband, leaving the single sideband (SSB) signal.",
+    "diagram": "tx-ssb"
   },
   {
     "id": "18-4",
@@ -4813,7 +4856,8 @@
       "d": "mixes the two sidebands in the correct proportions"
     },
     "answer": "c",
-    "explanation": "The mixer translates the SSB signal up to the transmitter's required output frequency."
+    "explanation": "The mixer translates the SSB signal up to the transmitter's required output frequency.",
+    "diagram": "tx-ssb"
   },
   {
     "id": "18-5",
@@ -4827,7 +4871,8 @@
       "d": "removes any unwanted amplitude modulation from the signal"
     },
     "answer": "b",
-    "explanation": "The linear amplifier must faithfully amplify the modulated envelope without distortion, or the SSB signal's shape (and intelligibility) would be corrupted."
+    "explanation": "The linear amplifier must faithfully amplify the modulated envelope without distortion, or the SSB signal's shape (and intelligibility) would be corrupted.",
+    "diagram": "tx-ssb"
   },
   {
     "id": "18-6",
@@ -4841,7 +4886,8 @@
       "d": "a variable frequency oscillator"
     },
     "answer": "d",
-    "explanation": "VFO stands for variable frequency oscillator — it's the tunable oscillator that sets the transmit frequency."
+    "explanation": "VFO stands for variable frequency oscillator — it's the tunable oscillator that sets the transmit frequency.",
+    "diagram": "tx-ssb"
   },
   {
     "id": "18-7",
@@ -4855,7 +4901,8 @@
       "d": "a modulated CW signal"
     },
     "answer": "a",
-    "explanation": "The master oscillator produces a steady, unmodulated signal at the carrier frequency, which later stages key on and off for CW."
+    "explanation": "The master oscillator produces a steady, unmodulated signal at the carrier frequency, which later stages key on and off for CW.",
+    "diagram": "tx-cw"
   },
   {
     "id": "18-8",
@@ -4869,7 +4916,8 @@
       "d": "changes the frequency of the master oscillator signal"
     },
     "answer": "c",
-    "explanation": "The driver/buffer stage isolates the oscillator from the power amplifier, preventing the PA from pulling or loading the oscillator's frequency."
+    "explanation": "The driver/buffer stage isolates the oscillator from the power amplifier, preventing the PA from pulling or loading the oscillator's frequency.",
+    "diagram": "tx-cw"
   },
   {
     "id": "18-9",
@@ -4883,7 +4931,8 @@
       "d": "adds an 800 Hz audio tone to the signal when the key is depressed"
     },
     "answer": "b",
-    "explanation": "The Morse key allows the oscillator's signal through to later stages only while the key is pressed, forming the dots and dashes."
+    "explanation": "The Morse key allows the oscillator's signal through to later stages only while the key is pressed, forming the dots and dashes.",
+    "diagram": "tx-cw"
   },
   {
     "id": "18-10",
@@ -4897,7 +4946,8 @@
       "d": "should be water-cooled"
     },
     "answer": "a",
-    "explanation": "The power amplifier's job is to amplify the RF signal up to a suitable output level for the antenna."
+    "explanation": "The power amplifier's job is to amplify the RF signal up to a suitable output level for the antenna.",
+    "diagram": "tx-cw"
   },
   {
     "id": "18-11",
@@ -4911,7 +4961,8 @@
       "d": "shifts the frequency spectrum of the audio signal into the RF region"
     },
     "answer": "a",
-    "explanation": "The speech amplifier boosts the weak audio signal coming directly from the microphone."
+    "explanation": "The speech amplifier boosts the weak audio signal coming directly from the microphone.",
+    "diagram": "tx-fm"
   },
   {
     "id": "18-12",
@@ -4925,7 +4976,8 @@
       "d": "causes the speech waveform to shift the frequency of the oscillator"
     },
     "answer": "d",
-    "explanation": "In an FM transmitter, the modulator causes the speech waveform to shift (deviate) the oscillator's frequency — that's how FM encodes information."
+    "explanation": "In an FM transmitter, the modulator causes the speech waveform to shift (deviate) the oscillator's frequency — that's how FM encodes information.",
+    "diagram": "tx-fm"
   },
   {
     "id": "18-13",
@@ -4939,7 +4991,8 @@
       "d": "a variable frequency audio oscillator"
     },
     "answer": "b",
-    "explanation": "In this FM transmitter, the oscillator is a variable frequency RF oscillator that gets frequency-modulated by the speech."
+    "explanation": "In this FM transmitter, the oscillator is a variable frequency RF oscillator that gets frequency-modulated by the speech.",
+    "diagram": "tx-fm"
   },
   {
     "id": "18-14",
@@ -4953,7 +5006,8 @@
       "d": "multiplies the oscillator signal by the speech signal"
     },
     "answer": "c",
-    "explanation": "The frequency multiplier produces a harmonic of the oscillator's signal, stepping the frequency up to the required output band."
+    "explanation": "The frequency multiplier produces a harmonic of the oscillator's signal, stepping the frequency up to the required output band.",
+    "diagram": "tx-fm"
   },
   {
     "id": "18-15",
@@ -4967,7 +5021,8 @@
       "d": "amplifies the RF signal to a suitable level"
     },
     "answer": "d",
-    "explanation": "The power amplifier's job is to amplify the RF signal to the level needed to drive the antenna."
+    "explanation": "The power amplifier's job is to amplify the RF signal to the level needed to drive the antenna.",
+    "diagram": "tx-fm"
   },
   {
     "id": "18-16",
@@ -4981,7 +5036,8 @@
       "d": "no carrier and one sideband"
     },
     "answer": "a",
-    "explanation": "A standard AM (amplitude modulated) signal consists of a carrier plus two sidebands (upper and lower)."
+    "explanation": "A standard AM (amplitude modulated) signal consists of a carrier plus two sidebands (upper and lower).",
+    "diagram": "tx-fm"
   },
   {
     "id": "18-17",
@@ -5611,7 +5667,8 @@
       "d": "restore voltage variations"
     },
     "answer": "b",
-    "explanation": "The Filter block smooths the pulsating DC waveform coming out of the rectifier."
+    "explanation": "The Filter block smooths the pulsating DC waveform coming out of the rectifier.",
+    "diagram": "reg-power-supply"
   },
   {
     "id": "22-2",
@@ -5625,7 +5682,8 @@
       "d": "keep the output voltage at a constant value"
     },
     "answer": "d",
-    "explanation": "The Regulator block's job is to keep the output voltage constant despite changes in load or input voltage."
+    "explanation": "The Regulator block's job is to keep the output voltage constant despite changes in load or input voltage.",
+    "diagram": "reg-power-supply"
   },
   {
     "id": "22-3",
@@ -5639,7 +5697,8 @@
       "d": "transform the mains AC waveform into a higher frequency waveform"
     },
     "answer": "c",
-    "explanation": "The Transformer block converts the mains AC voltage to a more convenient AC voltage level for the rest of the supply."
+    "explanation": "The Transformer block converts the mains AC voltage to a more convenient AC voltage level for the rest of the supply.",
+    "diagram": "reg-power-supply"
   },
   {
     "id": "22-4",
@@ -5653,7 +5712,8 @@
       "d": "smooth the DC waveform"
     },
     "answer": "a",
-    "explanation": "The Rectifier block turns the transformer's AC output into a fluctuating (pulsating) DC voltage."
+    "explanation": "The Rectifier block turns the transformer's AC output into a fluctuating (pulsating) DC voltage.",
+    "diagram": "reg-power-supply"
   },
   {
     "id": "22-5",
@@ -5667,7 +5727,8 @@
       "d": "a single silicon power diode connected as a half-wave rectifier"
     },
     "answer": "c",
-    "explanation": "A three-terminal regulator chip is a common, simple way to build the Regulator block."
+    "explanation": "A three-terminal regulator chip is a common, simple way to build the Regulator block.",
+    "diagram": "reg-power-supply"
   },
   {
     "id": "22-6",
@@ -5681,7 +5742,8 @@
       "d": "Bypass the regulator if higher voltages occur on the output of the regulator compared with the input"
     },
     "answer": "d",
-    "explanation": "A diode placed reverse across the regulator bypasses it if the output voltage exceeds the input (e.g. from a sudden load change), protecting the regulator from reverse voltage damage."
+    "explanation": "A diode placed reverse across the regulator bypasses it if the output voltage exceeds the input (e.g. from a sudden load change), protecting the regulator from reverse voltage damage.",
+    "diagram": "reg-power-supply"
   },
   {
     "id": "22-7",
@@ -6591,7 +6653,8 @@
       "d": "director"
     },
     "answer": "a",
-    "explanation": "On the Yagi diagram, item U is the boom — the central support structure the elements attach to."
+    "explanation": "On the Yagi diagram, item U is the boom — the central support structure the elements attach to.",
+    "diagram": "yagi-antenna"
   },
   {
     "id": "27-2",
@@ -6605,7 +6668,8 @@
       "d": "director"
     },
     "answer": "b",
-    "explanation": "On the Yagi diagram, item V is the reflector — the element behind the driven element."
+    "explanation": "On the Yagi diagram, item V is the reflector — the element behind the driven element.",
+    "diagram": "yagi-antenna"
   },
   {
     "id": "27-3",
@@ -6619,7 +6683,8 @@
       "d": "driven element"
     },
     "answer": "c",
-    "explanation": "On the Yagi diagram, item X is the driven element — the element actually connected to the feedline."
+    "explanation": "On the Yagi diagram, item X is the driven element — the element actually connected to the feedline.",
+    "diagram": "yagi-antenna"
   },
   {
     "id": "27-4",
@@ -6633,7 +6698,8 @@
       "d": "antenna has one end grounded"
     },
     "answer": "c",
-    "explanation": "A dipole resonates when its total length (X+X) is a little shorter than half the signal's wavelength, due to the 'end effect' of real wire."
+    "explanation": "A dipole resonates when its total length (X+X) is a little shorter than half the signal's wavelength, due to the 'end effect' of real wire.",
+    "diagram": "trap-dipole"
   },
   {
     "id": "27-5",
@@ -6647,7 +6713,8 @@
       "d": "a parallel-tuned trap"
     },
     "answer": "d",
-    "explanation": "Inserting a parallel-tuned trap at points along the wire lets a single antenna resonate on multiple bands (a trap dipole)."
+    "explanation": "Inserting a parallel-tuned trap at points along the wire lets a single antenna resonate on multiple bands (a trap dipole).",
+    "diagram": "trap-dipole"
   },
   {
     "id": "27-6",
@@ -6661,7 +6728,8 @@
       "d": "a resistor"
     },
     "answer": "a",
-    "explanation": "Adding a loading inductor lets the physical antenna be shortened while keeping the same electrical (resonant) length."
+    "explanation": "Adding a loading inductor lets the physical antenna be shortened while keeping the same electrical (resonant) length.",
+    "diagram": "trap-dipole"
   },
   {
     "id": "27-7",
@@ -8271,7 +8339,8 @@
       "d": "MOSFET de-emphasis unit"
     },
     "answer": "a",
-    "explanation": "A 'modem' is a modulator/demodulator — the device that converts digital data to/from an audio or RF signal."
+    "explanation": "A 'modem' is a modulator/demodulator — the device that converts digital data to/from an audio or RF signal.",
+    "diagram": "digital-station"
   },
   {
     "id": "30-2",
@@ -8285,7 +8354,8 @@
       "d": "determines the modulation protocol"
     },
     "answer": "c",
-    "explanation": "The modem's job is to translate digital signals to and from audio signals that can be sent over the transceiver."
+    "explanation": "The modem's job is to translate digital signals to and from audio signals that can be sent over the transceiver.",
+    "diagram": "digital-station"
   },
   {
     "id": "30-3",

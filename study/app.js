@@ -3,13 +3,24 @@
 
   var app = document.getElementById('app');
   var STORAGE_KEY = 'nzart-study-progress-v1';
-  var REVEAL_DELAY_MS = 18000;
+  var REVEAL_DELAY_STORAGE_KEY = 'nzart-learn-reveal-delay-ms';
+  var AUTO_ADVANCE_MS = 30000; // fixed 30s idle countdown after the answer is revealed in Learn mode
+
+  function loadRevealDelay() {
+    var v = null;
+    try { v = parseInt(localStorage.getItem(REVEAL_DELAY_STORAGE_KEY), 10); } catch (e) {}
+    return [20000, 30000, 45000, 60000].indexOf(v) !== -1 ? v : 30000;
+  }
+  function saveRevealDelay(ms) {
+    try { localStorage.setItem(REVEAL_DELAY_STORAGE_KEY, String(ms)); } catch (e) {}
+  }
 
   // Real exam draws exactly 1 question per 10 in the bank, per topic (60 total).
   var EXAM_DRAW_RATIO = 10;
 
   var state = {
     questions: [],
+    diagrams: {},
     topics: [],
     screen: 'home',          // 'home' | 'topics' | 'session' | 'summary'
     mode: null,              // 'learn' | 'test' | 'exam'
@@ -24,6 +35,10 @@
     sessionResults: {},
     examAnswers: {},         // qid -> chosen letter, for exam review at the end
     revealTimer: null,
+    revealDelayMs: loadRevealDelay(),
+    autoAdvanceTimer: null,
+    autoAdvanceInterval: null,
+    autoAdvanceRemainingMs: 0,
   };
 
   function loadProgress() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (e) { return {}; } }
@@ -62,12 +77,16 @@
     return e;
   }
 
-  fetch('data/questions.json')
-    .then(function (r) {
+  Promise.all([
+    fetch('data/questions.json').then(function (r) {
       if (!r.ok) throw new Error('Could not load question data (' + r.status + ')');
       return r.json();
-    })
-    .then(function (data) {
+    }),
+    fetch('data/diagrams.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+  ])
+    .then(function (results) {
+      var data = results[0];
+      state.diagrams = results[1] || {};
       state.questions = data;
       var byTopic = {};
       data.forEach(function (q) {
@@ -86,6 +105,7 @@
   // ================= HOME =================
   function renderHome() {
     clearTimeout(state.revealTimer);
+    clearAutoAdvance();
     state.screen = 'home';
     app.innerHTML = '';
 
@@ -134,6 +154,23 @@
     var panel = el('div', { class: 'setup' });
     var title = state.mode === 'learn' ? 'Learn — pick your topics' : 'Test — pick your topics';
     panel.appendChild(el('h2', {}, [title]));
+
+    if (state.mode === 'learn') {
+      var delayWrap = el('div', { class: 'field', style: 'max-width:260px;margin-bottom:18px' });
+      delayWrap.appendChild(el('label', { for: 'reveal-delay' }, ['Answer reveal delay']));
+      var delaySelect = el('select', { id: 'reveal-delay' });
+      [20000, 30000, 45000, 60000].forEach(function (ms) {
+        var opt = el('option', { value: String(ms) }, [(ms / 1000) + ' seconds']);
+        if (ms === state.revealDelayMs) opt.setAttribute('selected', 'selected');
+        delaySelect.appendChild(opt);
+      });
+      delaySelect.addEventListener('change', function () {
+        state.revealDelayMs = parseInt(delaySelect.value, 10);
+        saveRevealDelay(state.revealDelayMs);
+      });
+      delayWrap.appendChild(delaySelect);
+      panel.appendChild(delayWrap);
+    }
 
     var actions = el('div', { class: 'topic-actions' }, [
       el('button', { type: 'button', onclick: function () {
@@ -217,6 +254,7 @@
   // ================= QUESTION SCREEN =================
   function renderQuestion() {
     clearTimeout(state.revealTimer);
+    clearAutoAdvance();
     state.screen = 'session';
 
     if (state.index >= state.queue.length) {
@@ -241,6 +279,11 @@
 
     var card = el('div', { class: 'qcard' });
     card.appendChild(el('div', { class: 'qtopic' }, [q.topic + '. ' + q.topicName]));
+    if (q.diagram && state.diagrams[q.diagram]) {
+      var diagramWrap = el('div', { class: 'diagram-wrap' });
+      diagramWrap.innerHTML = state.diagrams[q.diagram];
+      card.appendChild(diagramWrap);
+    }
     card.appendChild(el('p', { class: 'qtext' }, [q.question]));
 
     var optionsWrap = el('div', { class: 'options' });
@@ -289,10 +332,17 @@
           el('span', { class: 'label' }, ['Why']),
           q.explanation ? el('p', { class: 'why' }, [q.explanation]) : el('p', { class: 'why' }, ['Answer highlighted above.'])
         ]));
+        var autoBar = el('div', { class: 'auto-advance' }, [
+          el('div', { class: 'auto-advance-fill', id: 'auto-advance-fill' }),
+        ]);
+        card.appendChild(autoBar);
+        card.appendChild(el('p', { class: 'auto-advance-note', id: 'auto-advance-note' }, ['Moving on automatically in 30s…']));
+        startAutoAdvance();
       } else {
-        card.appendChild(el('div', { class: 'learn-note pending' }, ['Revealing the answer… (click to reveal now)']));
-        card.addEventListener('click', revealLearnNow);
-        state.revealTimer = setTimeout(revealLearnNow, REVEAL_DELAY_MS);
+        var pendingNote = el('div', { class: 'learn-note pending' }, ['Revealing the answer in ' + Math.round(state.revealDelayMs / 1000) + 's… (click here to reveal now)']);
+        pendingNote.addEventListener('click', revealLearnNow);
+        card.appendChild(pendingNote);
+        state.revealTimer = setTimeout(revealLearnNow, state.revealDelayMs);
       }
     }
     if (state.mode === 'exam') {
@@ -315,6 +365,31 @@
     app.appendChild(card);
   }
 
+  function clearAutoAdvance() {
+    clearTimeout(state.autoAdvanceTimer);
+    clearInterval(state.autoAdvanceInterval);
+    state.autoAdvanceTimer = null;
+    state.autoAdvanceInterval = null;
+  }
+
+  function startAutoAdvance() {
+    clearAutoAdvance();
+    state.autoAdvanceRemainingMs = AUTO_ADVANCE_MS;
+    var tickMs = 250;
+    state.autoAdvanceInterval = setInterval(function () {
+      state.autoAdvanceRemainingMs -= tickMs;
+      var fill = document.getElementById('auto-advance-fill');
+      var note = document.getElementById('auto-advance-note');
+      var pct = Math.max(0, (state.autoAdvanceRemainingMs / AUTO_ADVANCE_MS) * 100);
+      if (fill) fill.style.width = pct + '%';
+      if (note) note.textContent = 'Moving on automatically in ' + Math.max(0, Math.ceil(state.autoAdvanceRemainingMs / 1000)) + 's… (click a button to stay)';
+      if (state.autoAdvanceRemainingMs <= 0) {
+        clearAutoAdvance();
+        advance();
+      }
+    }, tickMs);
+  }
+
   function revealLearnNow() {
     clearTimeout(state.revealTimer);
     if (state.revealed) return;
@@ -323,6 +398,7 @@
   }
 
   function advance() {
+    clearAutoAdvance();
     state.index++;
     state.revealed = false;
     state.answered = false;
@@ -391,6 +467,11 @@
           var given = state.examAnswers[q.id];
           var row = el('div', { class: 'review-row' });
           row.appendChild(el('p', { class: 'review-q' }, [q.topic + '. ' + q.question]));
+          if (q.diagram && state.diagrams[q.diagram]) {
+            var dw = el('div', { class: 'diagram-wrap review-diagram' });
+            dw.innerHTML = state.diagrams[q.diagram];
+            row.appendChild(dw);
+          }
           row.appendChild(el('p', { class: 'review-a' }, [
             'Correct: ' + q.answer.toUpperCase() + ' — ' + q.options[q.answer] +
             (given ? ('. You chose: ' + given.toUpperCase() + ' — ' + q.options[given]) : '. You skipped this one.')

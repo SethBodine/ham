@@ -76,4 +76,18 @@ function badRequest(message) {
   return jsonResponse({ error: message || 'Bad request' }, { status: 400 });
 }
 
-export { requireAuth, jsonResponse, badRequest, unauthorized, sha256Hex };
+async function getFieldRegistry(env, operatorId) {
+  const raw = await env.LOGBOOK.get(`fields:${operatorId}`);
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return {};
+    const byKey = {};
+    parsed.forEach((f) => { if (f && f.key) byKey[f.key] = f; });
+    return byKey;
+  } catch (e) {
+    return {};
+  }
+}
+
+export { requireAuth, jsonResponse, badRequest, unauthorized, sha256Hex, getFieldRegistry };
