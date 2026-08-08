@@ -35,6 +35,8 @@
     sessionResults: {},
     examAnswers: {},         // qid -> chosen letter, for exam review at the end
     revealTimer: null,
+    revealInterval: null,
+    revealRemainingMs: 0,
     revealDelayMs: loadRevealDelay(),
     autoAdvanceTimer: null,
     autoAdvanceInterval: null,
@@ -104,7 +106,7 @@
 
   // ================= HOME =================
   function renderHome() {
-    clearTimeout(state.revealTimer);
+    clearRevealCountdown();
     clearAutoAdvance();
     state.screen = 'home';
     app.innerHTML = '';
@@ -253,7 +255,7 @@
 
   // ================= QUESTION SCREEN =================
   function renderQuestion() {
-    clearTimeout(state.revealTimer);
+    clearRevealCountdown();
     clearAutoAdvance();
     state.screen = 'session';
 
@@ -339,10 +341,16 @@
         card.appendChild(el('p', { class: 'auto-advance-note', id: 'auto-advance-note' }, ['Moving on automatically in 30s…']));
         startAutoAdvance();
       } else {
-        var pendingNote = el('div', { class: 'learn-note pending' }, ['Revealing the answer in ' + Math.round(state.revealDelayMs / 1000) + 's… (click here to reveal now)']);
+        var revealBar = el('div', { class: 'auto-advance' }, [
+          el('div', { class: 'auto-advance-fill', id: 'reveal-fill' }),
+        ]);
+        var pendingNote = el('p', { class: 'auto-advance-note pending', id: 'reveal-note' }, [
+          'Revealing the answer in ' + Math.round(state.revealDelayMs / 1000) + 's… (click here to reveal now)'
+        ]);
         pendingNote.addEventListener('click', revealLearnNow);
+        card.appendChild(revealBar);
         card.appendChild(pendingNote);
-        state.revealTimer = setTimeout(revealLearnNow, state.revealDelayMs);
+        startRevealCountdown();
       }
     }
     if (state.mode === 'exam') {
@@ -363,6 +371,31 @@
     card.appendChild(actions);
 
     app.appendChild(card);
+  }
+
+  function clearRevealCountdown() {
+    clearTimeout(state.revealTimer);
+    clearInterval(state.revealInterval);
+    state.revealTimer = null;
+    state.revealInterval = null;
+  }
+
+  function startRevealCountdown() {
+    clearRevealCountdown();
+    state.revealRemainingMs = state.revealDelayMs;
+    var tickMs = 250;
+    state.revealInterval = setInterval(function () {
+      state.revealRemainingMs -= tickMs;
+      var fill = document.getElementById('reveal-fill');
+      var note = document.getElementById('reveal-note');
+      var pct = Math.max(0, (state.revealRemainingMs / state.revealDelayMs) * 100);
+      if (fill) fill.style.width = pct + '%';
+      if (note) note.textContent = 'Revealing the answer in ' + Math.max(0, Math.ceil(state.revealRemainingMs / 1000)) + 's… (click here to reveal now)';
+      if (state.revealRemainingMs <= 0) {
+        clearRevealCountdown();
+        revealLearnNow();
+      }
+    }, tickMs);
   }
 
   function clearAutoAdvance() {
@@ -391,7 +424,7 @@
   }
 
   function revealLearnNow() {
-    clearTimeout(state.revealTimer);
+    clearRevealCountdown();
     if (state.revealed) return;
     state.revealed = true;
     renderQuestion();

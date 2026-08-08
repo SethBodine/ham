@@ -66,6 +66,8 @@ a{color:var(--accent)}
 .auto-advance{height:5px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:14px}
 .auto-advance-fill{height:100%;width:100%;background:var(--accent);transition:width .25s linear}
 .auto-advance-note{margin:6px 0 0;font-size:.78rem;color:var(--muted)}
+.auto-advance-note.pending{cursor:pointer;font-style:italic}
+.auto-advance-note.pending:hover{text-decoration:underline}
 
 select{
   width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fff;color:var(--ink);
