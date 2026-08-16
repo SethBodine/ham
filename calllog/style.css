@@ -30,6 +30,7 @@ input[type=text],input[type=password],input[type=date],input[type=time],input[ty
   width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fff;color:var(--ink);
 }
 .readonly-field{background:var(--accent-soft);color:var(--muted);cursor:default}
+input.invalid{border-color:var(--bad);background:var(--bad-bg)}
 .field{margin-bottom:12px}
 .grid{display:grid;gap:12px}
 @media (min-width:640px){.grid.cols-2{grid-template-columns:1fr 1fr}
@@ -72,4 +73,9 @@ tbody tr:hover{background:var(--accent-soft)}
   margin-left:6px;padding:0 2px;line-height:1;vertical-align:middle;
 }
 .col-delete:hover{text-decoration:underline}
+.col-restore{
+  border:none;background:none;color:var(--accent);cursor:pointer;font-size:.95rem;font-weight:700;
+  margin-left:6px;padding:0 2px;line-height:1;vertical-align:middle;
+}
+.col-restore:hover{text-decoration:underline}
 .col-legacy-mark{margin-left:4px;color:var(--bad);cursor:help}

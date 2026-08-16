@@ -5,10 +5,10 @@
   var KEY_STORAGE = 'calllog-access-key';
 
   var STANDARD_FIELDS = [
-    { key: 'callsign', label: 'Callsign worked', type: 'text' },
+    { key: 'callsign', label: 'Callsign worked', type: 'text', required: true },
     { key: 'firstName', label: 'First name', type: 'text' },
-    { key: 'surname', label: 'Surname (optional)', type: 'text' },
-    { key: 'contactDateTime', label: 'Date & time (your local timezone)', type: 'datetime' },
+    { key: 'surname', label: 'Surname', type: 'text', placeholder: 'Optional' },
+    { key: 'contactDateTime', label: 'Date & Time', type: 'datetime', required: true },
     { key: 'frequency', label: 'Frequency', type: 'text', placeholder: 'e.g. 14.245' },
     { key: 'mode', label: 'Mode', type: 'text', placeholder: 'e.g. SSB, FM, FT8' },
     { key: 'sigRcvd', label: 'Signal rcvd', type: 'text', placeholder: 'e.g. 59' },
@@ -189,6 +189,12 @@
 
     var panel = el('div', { class: 'panel' });
     panel.appendChild(el('h2', {}, [editing ? 'Edit contact' : 'Add contact']));
+    panel.appendChild(el('p', { class: 'muted', style: 'margin-top:-8px' }, [
+      'Fields marked * are required. Date & Time is entered and shown in your local timezone, but stored in UTC.'
+    ]));
+
+    var formErrorSlot = el('div');
+    panel.appendChild(formErrorSlot);
 
     var inputs = {};
     var grid = el('div', { class: 'grid cols-4' });
@@ -203,8 +209,11 @@
         input.value = editing ? (editing[f.key] || '') : '';
       }
       inputs[f.key] = input;
+      if (f.required) {
+        input.addEventListener('input', function () { input.classList.remove('invalid'); });
+      }
       grid.appendChild(el('div', { class: 'field' }, [
-        el('label', { for: 'f-' + f.key }, [f.label]),
+        el('label', { for: 'f-' + f.key }, [f.label + (f.required ? ' *' : '')]),
         input,
       ]));
       // Drop the read-only "last worked" lookup right after the callsign field.
@@ -219,6 +228,9 @@
 
     // Look up when this callsign was last logged. If it's never been logged before,
     // treat it as a new callsign and default the date/time field to right now.
+    // If it has been logged before, use that most recent record to fill in the
+    // operator's name and usual mode, as long as the operator hasn't already typed
+    // something into those fields themselves.
     function updateLastWorked() {
       var cs = inputs.callsign.value.trim().toUpperCase();
       if (!cs) { lastWorkedInput.value = ''; return; }
@@ -235,8 +247,12 @@
         matches.sort(function (a, b) {
           return (b.contactDateTime || b.createdAt || '').localeCompare(a.contactDateTime || a.createdAt || '');
         });
-        var when = matches[0].contactDateTime || matches[0].createdAt;
+        var last = matches[0];
+        var when = last.contactDateTime || last.createdAt;
         lastWorkedInput.value = formatLocalDisplay(when) + ' local';
+        ['firstName', 'surname', 'mode'].forEach(function (k) {
+          if (!inputs[k].value.trim() && last[k]) inputs[k].value = last[k];
+        });
       }
     }
     inputs.callsign.addEventListener('input', updateLastWorked);
@@ -294,7 +310,10 @@
     var actions = el('div', { style: 'margin-top:16px;display:flex;gap:10px' });
     actions.appendChild(el('button', {
       class: 'btn', type: 'button',
-      onclick: function () { submitForm(inputs, registryInputs, legacyKeys, editing); }
+      onclick: function () {
+        if (!validateRequired(inputs, formErrorSlot)) return;
+        submitForm(inputs, registryInputs, legacyKeys, editing);
+      }
     }, [editing ? 'Save changes' : 'Add contact']));
     if (editing) {
       actions.appendChild(el('button', {
@@ -369,6 +388,26 @@
 
     wrap.appendChild(el('div', { class: 'panel-inset' }, [row, el('div', { style: 'display:flex;gap:8px;margin-top:10px' }, [createBtn, cancelBtn]), errorSlot]));
     return wrap;
+  }
+
+  function validateRequired(inputs, errorSlot) {
+    var missing = [];
+    STANDARD_FIELDS.forEach(function (f) {
+      if (!f.required) return;
+      var empty = inputs[f.key].value.trim() === '';
+      inputs[f.key].classList.toggle('invalid', empty);
+      if (empty) missing.push(f.label);
+    });
+    errorSlot.innerHTML = '';
+    if (missing.length) {
+      errorSlot.appendChild(el('div', { class: 'error', style: 'margin-bottom:12px' }, [
+        'Please fill in: ' + missing.join(', ') + '.'
+      ]));
+      inputs[STANDARD_FIELDS.filter(function (f) { return f.required; })
+        .find(function (f) { return inputs[f.key].value.trim() === ''; }).key].focus();
+      return false;
+    }
+    return true;
   }
 
   function submitForm(inputs, registryInputs, legacyKeys, editing) {
@@ -453,6 +492,10 @@
         }, ['×']));
       }
       if (c.legacy) {
+        cellChildren.push(el('button', {
+          class: 'col-restore', type: 'button', title: 'Restore this field to the active field list',
+          onclick: function () { restoreFieldDef(c.key, findSampleValue(c.key)); }
+        }, ['↺']));
         cellChildren.push(el('span', { class: 'col-legacy-mark', title: 'Removed field — clears next time each contact is edited & saved' }, ['†']));
       }
       headerCells.push(el('th', {}, cellChildren));
@@ -490,10 +533,18 @@
     panel.appendChild(scroll);
     if (legacyCols.length) {
       panel.appendChild(el('p', { class: 'muted', style: 'font-size:.78rem;margin-top:10px' }, [
-        '† marks a field that was removed from the field list. Its old values will clear from each contact the next time that contact is edited and saved.'
+        '† marks a field that was removed from the field list — click ↺ next to it to restore it as an active custom field, or leave it and its old values will clear from each contact the next time that contact is edited and saved.'
       ]));
     }
     return panel;
+  }
+
+  function findSampleValue(key) {
+    for (var i = 0; i < state.entries.length; i++) {
+      var v = state.entries[i][key];
+      if (v !== undefined && v !== null && v !== '') return v;
+    }
+    return '';
   }
 
   function restoreFieldDef(key, sampleValue) {
