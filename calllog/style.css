@@ -26,9 +26,10 @@ a{color:var(--accent)}
 .panel h2{margin-top:0;font-size:1.02rem}
 
 label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px}
-input[type=text],input[type=password],input[type=date],input[type=time],select{
+input[type=text],input[type=password],input[type=date],input[type=time],input[type=datetime-local],input[type=number],select{
   width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fff;color:var(--ink);
 }
+.readonly-field{background:var(--accent-soft);color:var(--muted);cursor:default}
 .field{margin-bottom:12px}
 .grid{display:grid;gap:12px}
 @media (min-width:640px){.grid.cols-2{grid-template-columns:1fr 1fr}
@@ -59,7 +60,7 @@ tbody tr:hover{background:var(--accent-soft)}
 .toprow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
 
 .legacy-fields{margin-top:16px;padding:12px 14px;border:1px dashed var(--bad);border-radius:8px;background:var(--bad-bg)}
-.legacy-row{display:flex;gap:8px;font-size:.85rem;padding:3px 0}
+.legacy-row{display:flex;gap:8px;align-items:center;font-size:.85rem;padding:3px 0}
 .legacy-key{font-weight:600;color:var(--ink)}
 .legacy-val{color:var(--muted)}
 

@@ -6,8 +6,9 @@
 
   var STANDARD_FIELDS = [
     { key: 'callsign', label: 'Callsign worked', type: 'text' },
-    { key: 'date', label: 'Date', type: 'date' },
-    { key: 'time', label: 'Time (UTC)', type: 'text', placeholder: 'e.g. 0930z' },
+    { key: 'firstName', label: 'First name', type: 'text' },
+    { key: 'surname', label: 'Surname (optional)', type: 'text' },
+    { key: 'contactDateTime', label: 'Date & time (your local timezone)', type: 'datetime' },
     { key: 'frequency', label: 'Frequency', type: 'text', placeholder: 'e.g. 14.245' },
     { key: 'mode', label: 'Mode', type: 'text', placeholder: 'e.g. SSB, FM, FT8' },
     { key: 'sigRcvd', label: 'Signal rcvd', type: 'text', placeholder: 'e.g. 59' },
@@ -16,6 +17,38 @@
   ];
   var STANDARD_KEYS = STANDARD_FIELDS.map(function (f) { return f.key; });
   var RESERVED_KEYS = ['id', 'createdAt', 'updatedAt'];
+
+  // ---------- Date/time helpers ----------
+  // Entries store contactDateTime as a UTC ISO string. The <input type="datetime-local">
+  // control always shows/accepts *local* wall-clock time with no timezone info, so we
+  // convert on the way in and out. This is what gives us "seamless" local display while
+  // keeping a single, unambiguous UTC value in storage.
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function isoToLocalInputValue(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) +
+      'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+  }
+
+  function localInputValueToIso(val) {
+    if (!val) return '';
+    // "YYYY-MM-DDTHH:MM" with no zone suffix is parsed by Date() as local time.
+    var d = new Date(val);
+    if (isNaN(d.getTime())) return '';
+    return d.toISOString();
+  }
+
+  function formatLocalDisplay(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    var datePart = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
+    var timePart = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    return datePart + ' ' + timePart;
+  }
 
   var state = {
     key: null,
@@ -159,17 +192,55 @@
 
     var inputs = {};
     var grid = el('div', { class: 'grid cols-4' });
+    var lastWorkedInput = el('input', { type: 'text', id: 'f-lastWorked', readonly: 'readonly', class: 'readonly-field' });
     STANDARD_FIELDS.forEach(function (f) {
-      var input = el('input', { type: f.type === 'date' ? 'date' : 'text', id: 'f-' + f.key });
+      var htmlType = f.type === 'datetime' ? 'datetime-local' : (f.type === 'date' ? 'date' : 'text');
+      var input = el('input', { type: htmlType, id: 'f-' + f.key });
       if (f.placeholder) input.setAttribute('placeholder', f.placeholder);
-      input.value = editing ? (editing[f.key] || '') : '';
+      if (f.type === 'datetime') {
+        input.value = editing ? isoToLocalInputValue(editing[f.key]) : '';
+      } else {
+        input.value = editing ? (editing[f.key] || '') : '';
+      }
       inputs[f.key] = input;
       grid.appendChild(el('div', { class: 'field' }, [
         el('label', { for: 'f-' + f.key }, [f.label]),
         input,
       ]));
+      // Drop the read-only "last worked" lookup right after the callsign field.
+      if (f.key === 'callsign') {
+        grid.appendChild(el('div', { class: 'field' }, [
+          el('label', { for: 'f-lastWorked' }, ['Last worked (this callsign)']),
+          lastWorkedInput,
+        ]));
+      }
     });
     panel.appendChild(grid);
+
+    // Look up when this callsign was last logged. If it's never been logged before,
+    // treat it as a new callsign and default the date/time field to right now.
+    function updateLastWorked() {
+      var cs = inputs.callsign.value.trim().toUpperCase();
+      if (!cs) { lastWorkedInput.value = ''; return; }
+      var matches = state.entries.filter(function (e) {
+        if (editing && e.id === editing.id) return false;
+        return (e.callsign || '').trim().toUpperCase() === cs;
+      });
+      if (matches.length === 0) {
+        lastWorkedInput.value = 'New callsign — not logged before';
+        if (!editing && !inputs.contactDateTime.value) {
+          inputs.contactDateTime.value = isoToLocalInputValue(new Date().toISOString());
+        }
+      } else {
+        matches.sort(function (a, b) {
+          return (b.contactDateTime || b.createdAt || '').localeCompare(a.contactDateTime || a.createdAt || '');
+        });
+        var when = matches[0].contactDateTime || matches[0].createdAt;
+        lastWorkedInput.value = formatLocalDisplay(when) + ' local';
+      }
+    }
+    inputs.callsign.addEventListener('input', updateLastWorked);
+    updateLastWorked();
 
     // Registry-defined custom fields — always shown, populated from the entry when editing.
     var registryInputs = {};
@@ -201,12 +272,17 @@
     if (legacyKeys.length) {
       var legacyBox = el('div', { class: 'legacy-fields' });
       legacyBox.appendChild(el('p', { class: 'muted', style: 'margin:0 0 6px' }, [
-        'These fields were removed from the field list. Saving this contact will remove them from it.'
+        'These fields were removed from the field list, likely by accident, or on purpose earlier. Click Restore to bring one back as an editable custom field, or leave it — saving this contact will then clear it.'
       ]));
       legacyKeys.forEach(function (k) {
+        var restoreBtn = el('button', {
+          class: 'btn secondary small', type: 'button',
+          onclick: function () { restoreFieldDef(k, editing[k]); }
+        }, ['Restore']);
         legacyBox.appendChild(el('div', { class: 'legacy-row' }, [
           el('span', { class: 'legacy-key' }, [k]),
           el('span', { class: 'legacy-val' }, [String(editing[k])]),
+          restoreBtn,
         ]));
       });
       panel.appendChild(legacyBox);
@@ -298,6 +374,11 @@
   function submitForm(inputs, registryInputs, legacyKeys, editing) {
     var payload = {};
     STANDARD_FIELDS.forEach(function (f) {
+      if (f.type === 'datetime') {
+        var iso = localInputValueToIso(inputs[f.key].value);
+        if (iso) payload[f.key] = iso;
+        return;
+      }
       var v = inputs[f.key].value.trim();
       if (v) payload[f.key] = v;
     });
@@ -336,6 +417,9 @@
   function renderTable() {
     var panel = el('div', { class: 'panel' });
     panel.appendChild(el('h2', {}, ['Contacts (' + state.entries.length + ')']));
+    panel.appendChild(el('p', { class: 'muted', style: 'margin-top:-8px' }, [
+      'Date & time is stored in UTC and shown here in your browser\u2019s local timezone. Hover a date/time cell to see the UTC value.'
+    ]));
 
     if (state.entries.length === 0) {
       panel.appendChild(el('p', { class: 'muted' }, ['No contacts logged yet.']));
@@ -384,7 +468,15 @@
       var cells = [el('td', {}, [String(i + 1)])];
       columns.forEach(function (c) {
         var v = entry[c.key];
-        cells.push(el('td', {}, [v === undefined || v === null || v === '' ? '—' : String(v)]));
+        var display;
+        var titleAttr = {};
+        if (c.key === 'contactDateTime') {
+          display = v ? formatLocalDisplay(v) : '—';
+          if (v) titleAttr.title = v + ' UTC';
+        } else {
+          display = v === undefined || v === null || v === '' ? '—' : String(v);
+        }
+        cells.push(el('td', titleAttr, [display]));
       });
       var actions = el('td', { class: 'actions-cell' }, [
         el('button', { class: 'btn secondary small', type: 'button', onclick: function () { state.editingId = entry.id; renderApp(); window.scrollTo(0, 0); } }, ['Edit']),
@@ -402,6 +494,18 @@
       ]));
     }
     return panel;
+  }
+
+  function restoreFieldDef(key, sampleValue) {
+    var type = typeof sampleValue === 'number' ? 'number' : 'text';
+    api('/fields', { method: 'POST', body: { key: key, type: type } })
+      .then(function (r) {
+        state.fieldDefs = r.fields;
+        renderApp();
+      })
+      .catch(function (err) {
+        if (err.message !== 'unauthorized') alert('Could not restore field: ' + err.message);
+      });
   }
 
   function deleteFieldDef(key) {

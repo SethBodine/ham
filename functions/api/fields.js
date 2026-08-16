@@ -5,7 +5,11 @@ const MAX_FIELDS = 40;
 const VALID_TYPES = new Set(['text', 'number', 'date']);
 const RESERVED_KEYS = new Set([
   'id', 'createdAt', 'updatedAt',
-  'callsign', 'date', 'time', 'frequency', 'mode', 'sigRcvd', 'sigSent', 'notes',
+  // Current standard fields:
+  'callsign', 'firstName', 'surname', 'contactDateTime', 'frequency', 'mode', 'sigRcvd', 'sigSent', 'notes',
+  // Retired standard fields — still reserved so old entries that still carry these
+  // keys (pre-migration) can never collide with a newly created custom field.
+  'date', 'time',
 ]);
 
 function sanitizeString(v, maxLen) {
