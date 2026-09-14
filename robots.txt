@@ -53,4 +53,4 @@ User-agent: Bytespider
 Disallow: /calllog/
 Allow: /
 
-Sitemap: https://ham.insecure.co.nz/sitemap.xml
+Sitemap: https://ham.b0x.co.nz/sitemap.xml

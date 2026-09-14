@@ -1,6 +1,8 @@
 # ZL Ham Radio Toolkit
 
-Two tools, one Cloudflare Pages site, deployed to **https://ham.insecure.co.nz**:
+Two tools, one Cloudflare Pages site, deployed to **https://ham.b0x.co.nz** (primary)
+and also reachable at **https://ham.insecure.co.nz** (alternate — same deployment, both
+custom domains point at the same Cloudflare Pages project, no redirect between them):
 
 - **`/study`** — a study/self-test tool for the NZART Amateur Radio Examination
   (New Zealand only). All 600 questions from the NZART question bank, with
@@ -39,7 +41,7 @@ robots.txt            keeps /calllog out of search indexes
 2. In Cloudflare Pages, create a project from the GitHub repo.
    - Build command: none / leave blank.
    - Build output directory: `/` (the repo root).
-3. Add the custom domain `ham.insecure.co.nz` to the Pages project.
+3. Add the custom domain `ham.b0x.co.nz` to the Pages project.
 4. Create the KV namespace and bind it:
    ```
    npx wrangler kv namespace create LOGBOOK
@@ -56,7 +58,7 @@ robots.txt            keeps /calllog out of search indexes
    ```
    or add it via the dashboard: Pages project → Settings → Environment
    variables → add `LOG_API_KEY` as **encrypted**.
-6. Deploy. Visit `https://ham.insecure.co.nz/calllog` and enter the key you
+6. Deploy. Visit `https://ham.b0x.co.nz/calllog` and enter the key you
    generated to unlock it.
 
 ## The exam study tool
@@ -180,9 +182,16 @@ The landing page and `/study` are the two pages meant to be publicly discoverabl
 `X-Robots-Tag: noindex` + on-page `<meta name="robots" content="noindex, nofollow">`)
 and none of that — or any backend/`functions/` code — was touched here.
 
-- Fixed a stale domain: the README referred to `ham.b0x.co.nz` throughout, but the site
-  is actually deployed at `ham.insecure.co.nz`. Updated the three references above and
-  used the real domain in every canonical/OG/sitemap/robots entry added below.
+- **Dual domain**: this site is intentionally hosted at both `ham.b0x.co.nz` (primary)
+  and `ham.insecure.co.nz` (a valid alternate — same deployment, no redirect between
+  them, both meant to work). To avoid diluting search ranking by having the same
+  content look like two separate sites, every canonical URL, `og:url`, JSON-LD `@id`,
+  `robots.txt` `Sitemap:` directive, and `sitemap.xml` entry added below points at the
+  **primary domain, `ham.b0x.co.nz`**, regardless of which domain actually serves the
+  request — that's the normal way to tell search engines "these are the same page,
+  treat this one as canonical" without needing a redirect. `llms.txt` mentions both
+  domains explicitly so an AI system doesn't treat the alternate as a separate,
+  unrelated site.
 - Added canonical, Open Graph/Twitter tags, and a `WebSite` JSON-LD block to the landing
   page (`index.html`).
 - `/study` is a client-rendered app shell like `hops` and `dmarc` — `study/app.js`
@@ -191,8 +200,7 @@ and none of that — or any backend/`functions/` code — was touched here.
   JSON-LD, and a `<noscript>` block (description + FAQ) placed outside `#app` so it's
   real static content for crawlers and no-JS browsers, invisible to everyone else.
 - New `robots.txt` additions: explicit `Allow`/`Disallow: /calllog/` pairs for the major
-  AI/LLM crawlers (previously only the wildcard `User-agent: *` rule existed), and the
-  `Sitemap:` directive now points at the real domain.
+  AI/LLM crawlers (previously only the wildcard `User-agent: *` rule existed).
 - New `sitemap.xml` lists only the homepage and `/study/` — `/calllog/` is intentionally
   excluded, same reasoning as robots.txt.
 - New `llms.txt` describes `/study` normally, but explicitly tells AI crawlers/agents
