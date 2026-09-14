@@ -1,3 +1,56 @@
 User-agent: *
 Disallow: /calllog/
 Allow: /
+
+# Explicitly welcoming AI/LLM crawlers to the study tool and landing page —
+# see /llms.txt. /calllog/ is a private, key-protected personal logbook and
+# stays disallowed for every crawler, same as above.
+User-agent: GPTBot
+Disallow: /calllog/
+Allow: /
+
+User-agent: ChatGPT-User
+Disallow: /calllog/
+Allow: /
+
+User-agent: OAI-SearchBot
+Disallow: /calllog/
+Allow: /
+
+User-agent: ClaudeBot
+Disallow: /calllog/
+Allow: /
+
+User-agent: Claude-User
+Disallow: /calllog/
+Allow: /
+
+User-agent: anthropic-ai
+Disallow: /calllog/
+Allow: /
+
+User-agent: PerplexityBot
+Disallow: /calllog/
+Allow: /
+
+User-agent: Perplexity-User
+Disallow: /calllog/
+Allow: /
+
+User-agent: Google-Extended
+Disallow: /calllog/
+Allow: /
+
+User-agent: Applebot-Extended
+Disallow: /calllog/
+Allow: /
+
+User-agent: CCBot
+Disallow: /calllog/
+Allow: /
+
+User-agent: Bytespider
+Disallow: /calllog/
+Allow: /
+
+Sitemap: https://ham.insecure.co.nz/sitemap.xml
