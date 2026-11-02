@@ -145,6 +145,15 @@
       el('p', {}, ['60 questions, drawn the same way the real exam is built. Pass mark: 40/60. No hints until the end.']),
     ]));
 
+    grid.appendChild(el('button', {
+      class: 'home-card', type: 'button',
+      onclick: function () { if (window.NZCheat) window.NZCheat.open({ state: state, el: el, app: app, home: renderHome }); }
+    }, [
+      el('span', { class: 'home-card-kicker' }, ['Read & remember']),
+      el('h2', {}, ['Cheat Sheets']),
+      el('p', {}, ['Short primer per section, then each question boiled down to the answer and why. No timer.']),
+    ]));
+
     app.appendChild(grid);
   }
 
@@ -213,8 +222,10 @@
 
     var startBtn = el('button', { class: 'btn', type: 'button', onclick: startSession }, [startLabel()]);
     startBtn.disabled = state.selectedTopics.size === 0;
-    panel.appendChild(startBtn);
-    panel.appendChild(el('button', { class: 'btn secondary', type: 'button', onclick: renderHome, style: 'margin-left:10px' }, ['← Back']));
+    panel.appendChild(el('div', { class: 'setup-actions' }, [
+      startBtn,
+      el('button', { class: 'btn secondary', type: 'button', onclick: renderHome }, ['← Back'])
+    ]));
 
     app.appendChild(panel);
   }

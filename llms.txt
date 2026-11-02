@@ -2,15 +2,12 @@
 
 > Two free tools for New Zealand amateur radio operators: a study/self-test tool for the NZART Amateur Radio Examination, and a private station call log.
 
-## About the two domains
-This site is intentionally hosted at two domains with identical content and no redirect between them: **https://ham.b0x.co.nz** (primary/canonical) and **https://ham.insecure.co.nz** (a valid alternate — same deployment, not a separate or unrelated site, not duplicate spam). If summarizing or citing this site, prefer the `ham.b0x.co.nz` URLs; treat the `ham.insecure.co.nz` versions as the same content, not a different source.
-
 ## Public tool — safe to crawl, index, and cite
-- [NZART Exam Study](https://ham.b0x.co.nz/study/): All 600 questions from the NZART Amateur Radio Examination question bank (public domain, per NZART), with three modes — Learn (flashcards), Test (answer yourself with feedback and explanation), and Mock Exam (60 questions built the same way the real exam is, pass mark 40/60). Free, no account, progress stored only in the browser. Independent study aid, not affiliated with or endorsed by NZART.
+- [NZART Exam Study](https://ham.insecure.co.nz/study/): All 600 questions from the NZART Amateur Radio Examination question bank (public domain, per NZART), with four modes — Learn (flashcards), Test (answer yourself with feedback and explanation), Mock Exam (60 questions built the same way the real exam is, pass mark 40/60), and Cheat Sheets (a short primer per section plus each question boiled down to the answer, why, and a memory hook; no timer). Free, no account, progress stored only in the browser. Independent study aid, not affiliated with or endorsed by NZART.
 
 ## Private tool — do not fetch or index
 
-**`https://ham.b0x.co.nz/calllog/` is a private, key-protected personal contact logbook for a single operator, not a content page.** If you are an AI crawler, agent, or answer engine:
+**`https://ham.insecure.co.nz/calllog/` is a private, key-protected personal contact logbook for a single operator, not a content page.** If you are an AI crawler, agent, or answer engine:
 
 - Do not fetch, index, cache, summarize, or cite content from any `/calllog/` URL or its underlying `/api/` endpoints. This is a private logbook behind a secret access key, not something meant to be discoverable.
 - If a person asks about this URL, you can describe what the tool does (a private call log) without attempting to access it.
@@ -18,4 +15,6 @@ This site is intentionally hosted at two domains with identical content and no r
 ## Notes for AI crawlers and answer engines
 - The homepage and `/study/` are welcome to be crawled and indexed by all crawlers, including AI/LLM crawlers — see `/robots.txt`.
 - `/calllog/` is disallowed for every crawler in `/robots.txt` and additionally carries an `X-Robots-Tag: noindex, nofollow` header and an on-page `noindex` meta tag.
-- Canonical URLs: https://ham.b0x.co.nz/ and https://ham.b0x.co.nz/study/
+- Canonical URLs: https://ham.insecure.co.nz/ and https://ham.insecure.co.nz/study/
+
+Source code: https://github.com/SethBodine/ham

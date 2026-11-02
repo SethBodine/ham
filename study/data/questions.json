@@ -1033,7 +1033,7 @@
       "d": "7.10 to 7.40 MHz"
     },
     "answer": "c",
-    "explanation": "The 40 metre band in NZ runs from 7.00 to 7.30 MHz (wider than the ITU minimum, reflecting NZ's specific allocation)."
+    "explanation": "The 40 metre band in NZ runs from 7.00 to 7.30 MHz (7.1–7.3 MHz is shared with other services)."
   },
   {
     "id": "2-5",
@@ -1523,7 +1523,7 @@
       "d": "copper, aluminium, paper"
     },
     "answer": "c",
-    "explanation": "Copper, gold and aluminium are all good conductors — mica, wood and paper (in the other options) are insulators."
+    "explanation": "Gold, silver and aluminium are all good conductors — mica, wood and paper (in the other options) are insulators."
   },
   {
     "id": "3-20",
@@ -3511,7 +3511,7 @@
       "d": "source of a junction FET"
     },
     "answer": "c",
-    "explanation": "This question refers to a labelled transistor pin diagram in the question bank (not reproducible here); per NZART's answer key, position 2 is the base of the pnp transistor shown. Cross-check against the printed diagram when studying this one.",
+    "explanation": "In the diagram, 2 is the base of the NPN transistor. NPN memory aid: the emitter arrow points OUT (Not Pointing iN).",
     "diagram": "transistor-npn"
   },
   {
@@ -3526,7 +3526,7 @@
       "d": "base of an npn transistor"
     },
     "answer": "b",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 3 is the collector of the npn transistor shown.",
+    "explanation": "In the diagram, 3 is the collector of the NPN transistor (the lead without the arrow, opposite the emitter).",
     "diagram": "transistor-npn"
   },
   {
@@ -3541,7 +3541,7 @@
       "d": "emitter of a pnp transistor"
     },
     "answer": "a",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the base of the pnp transistor shown.",
+    "explanation": "In the diagram, 2 is the base of the PNP transistor. PNP: the emitter arrow points IN.",
     "diagram": "transistor-pnp"
   },
   {
@@ -3556,7 +3556,7 @@
       "d": "emitter of a pnp transistor"
     },
     "answer": "d",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 1 is the emitter of the pnp transistor shown.",
+    "explanation": "In the diagram, 1 is the emitter of the PNP transistor — the lead with the arrow, pointing in.",
     "diagram": "transistor-pnp"
   },
   {
@@ -3571,7 +3571,7 @@
       "d": "base of a pnp transistor"
     },
     "answer": "c",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the gate of the n-channel junction FET shown.",
+    "explanation": "In the diagram, 2 is the gate of an n-channel junction FET (n-channel: the gate arrow points in).",
     "diagram": "fet-nchannel"
   },
   {
@@ -3586,7 +3586,7 @@
       "d": "drain of an n-channel junction FET"
     },
     "answer": "d",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 3 is the drain of the n-channel junction FET shown.",
+    "explanation": "In the diagram, 3 is the drain of an n-channel junction FET.",
     "diagram": "fet-nchannel"
   },
   {
@@ -3601,7 +3601,7 @@
       "d": "cathode of a dual diode"
     },
     "answer": "a",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, position 2 is the gate of the MOSFET shown.",
+    "explanation": "In the diagram, 2 is the gate of the MOSFET (the gate lead is insulated from the channel).",
     "diagram": "mosfet-dualgate"
   },
   {
@@ -3616,7 +3616,7 @@
       "d": "dual gate MOSFET"
     },
     "answer": "d",
-    "explanation": "Refers to a labelled diagram in the question bank; per NZART's answer key, the symbol shown (two gates, drain, source) represents a dual gate MOSFET, commonly used as an RF mixer/amplifier.",
+    "explanation": "The symbol has two gates plus a drain and a source: a dual-gate MOSFET, often used as an RF amplifier or mixer.",
     "diagram": "mosfet-dualgate"
   },
   {
@@ -3631,7 +3631,7 @@
       "d": "screen grid of a pentode"
     },
     "answer": "c",
-    "explanation": "Refers to a labelled valve diagram in the question bank; per NZART's answer key, position 3 is the grid of the tetrode shown.",
+    "explanation": "In the diagram, 3 is the control grid of the tetrode (the grid nearest the cathode).",
     "diagram": "tetrode-valve"
   },
   {
@@ -3646,7 +3646,7 @@
       "d": "grid of a triode"
     },
     "answer": "b",
-    "explanation": "Refers to a labelled valve diagram in the question bank; per NZART's answer key, position 5 is the screen grid of the tetrode shown.",
+    "explanation": "In the diagram, 5 is the screen grid of the tetrode (the second grid, further from the cathode).",
     "diagram": "tetrode-valve"
   },
   {
@@ -4741,7 +4741,7 @@
       "d": "insufficient RF gain"
     },
     "answer": "c",
-    "explanation": "22 MHz is exactly one IF (500 kHz × 2 = 1 MHz) above/below... specifically it sits at the image frequency (signal + 2×IF from the LO), which a single-conversion receiver can't reject without extra filtering."
+    "explanation": "The image frequency is the wanted signal + 2 × IF: 21.0 + 2 × 0.5 = 22 MHz (oscillator at 21.5 MHz). A single-conversion receiver can't reject it with IF filtering."
   },
   {
     "id": "17-27",
@@ -5247,7 +5247,7 @@
       "d": "21050 kHz"
     },
     "answer": "b",
-    "explanation": "Harmonics are integer multiples of the fundamental: 2 × 3525 kHz = 7050 kHz = 7050 kHz (matches 7050 kHz, the second harmonic)."
+    "explanation": "Harmonics are whole-number multiples of the fundamental: 2 × 3525 kHz = 7050 kHz, the second harmonic."
   },
   {
     "id": "20-2",
@@ -5813,7 +5813,7 @@
       "d": "the other callsign, repeated twice"
     },
     "answer": "a",
-    "explanation": "Standard callsign exchange order is: your own callsign first, then the other station's callsign."
+    "explanation": "In a callsign exchange the other station's callsign comes first, then your own."
   },
   {
     "id": "23-2",
@@ -6683,7 +6683,7 @@
       "d": "driven element"
     },
     "answer": "c",
-    "explanation": "On the Yagi diagram, item X is the driven element — the element actually connected to the feedline.",
+    "explanation": "On the Yagi diagram, X is a director — an element in front of the driven element. (U boom, V reflector, W driven element.)",
     "diagram": "yagi-antenna"
   },
   {
@@ -6939,7 +6939,7 @@
       "d": "7200 kHz"
     },
     "answer": "a",
-    "explanation": "Total wire length = 40 m ≈ half-wave, so resonant frequency ≈ 150/40 ≈ 3.75 MHz, closest to the 3600 kHz option among the choices given typical end-effect shortening."
+    "explanation": "Total wire 20 m + 20 m = 40 m = half a wavelength. 150 ÷ 40 = 3.75 MHz, but end effect shortens real wire (142.5 ÷ 40 ≈ 3.56 MHz), so 3600 kHz is the answer."
   },
   {
     "id": "27-22",
@@ -7051,7 +7051,7 @@
       "d": "full wave centre fed horizontal"
     },
     "answer": "b",
-    "explanation": "A quarter wave vertical is a practical, compact choice for a 28 MHz car-roof mount, since it needs no counterpoise wires like a horizontal dipole."
+    "explanation": "A quarter-wave vertical is short (about 2.7 m at 28 MHz), radiates in all directions and uses the car body as its ground plane."
   },
   {
     "id": "27-30",

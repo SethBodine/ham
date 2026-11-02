@@ -11,12 +11,13 @@
   --radius:12px;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+html{-webkit-text-size-adjust:100%}
+body{overflow-wrap:break-word;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:var(--bg);color:var(--ink);line-height:1.5}
 a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.top{display:flex;align-items:baseline;gap:16px;max-width:1000px;margin:0 auto;padding:24px 20px 8px}
+.top{display:flex;align-items:baseline;gap:4px 16px;flex-wrap:wrap;max-width:1000px;margin:0 auto;padding:24px 20px 8px}
 .brand{font-size:.85rem;color:var(--muted);text-decoration:none;white-space:nowrap}
 .top h1{font-size:1.15rem;margin:0}
 .wrap{max-width:1000px;margin:0 auto;padding:16px 20px 60px}
@@ -30,9 +31,10 @@ input[type=text],input[type=password],input[type=date],input[type=time],input[ty
   width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fff;color:var(--ink);
 }
 .readonly-field{background:var(--accent-soft);color:var(--muted);cursor:default}
+input[type=date],input[type=time],input[type=datetime-local]{min-width:0;max-width:100%;min-height:42px}
 input.invalid{border-color:var(--bad);background:var(--bad-bg)}
-.field{margin-bottom:12px}
-.grid{display:grid;gap:12px}
+.field{margin-bottom:12px;min-width:0}
+.grid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
 @media (min-width:640px){.grid.cols-2{grid-template-columns:1fr 1fr}
   .grid.cols-4{grid-template-columns:repeat(4,1fr)}
   .grid.cols-3{grid-template-columns:repeat(3,1fr)}}
@@ -54,6 +56,9 @@ tbody tr:hover{background:var(--accent-soft)}
 .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 
 .actions-cell{display:flex;gap:6px}
+.table-scroll td.actions-cell{display:table-cell;position:sticky;right:0;background:var(--panel);box-shadow:-10px 0 8px -8px rgba(0,0,0,.18)}
+.table-scroll td.actions-cell .btn+.btn{margin-left:6px}
+tbody tr:hover td.actions-cell{background:var(--accent-soft)}
 .extra-fields{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .extra-field-row{display:flex;gap:8px;align-items:center}
 .extra-field-row input{flex:1}
@@ -79,3 +84,48 @@ tbody tr:hover{background:var(--accent-soft)}
 }
 .col-restore:hover{text-decoration:underline}
 .col-legacy-mark{margin-left:4px;color:var(--bad);cursor:help}
+
+.form-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.foot{max-width:1000px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:.78rem}
+.foot p{margin:0 0 8px}
+.field-chips{display:none}
+.chip{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;
+  padding:2px 4px 2px 12px;background:var(--panel);font-size:.84rem}
+
+/* Phones and small tablets: compact spacing, larger tap targets */
+@media (max-width:640px){
+  .top{flex-direction:column;align-items:flex-start;gap:2px;padding:16px 14px 4px}
+  .wrap{padding:12px 14px 40px}
+  .foot{padding:0 14px 32px}
+  .panel{padding:16px}
+  .btn{min-height:46px;padding:11px 18px}
+  .btn.small{min-height:42px;padding:8px 14px}
+  input[type=text],input[type=password],input[type=date],input[type=time],input[type=datetime-local],input[type=number],select{min-height:46px}
+  .toprow{align-items:stretch}
+  .toprow .field{flex:1 1 100%}
+  .toprow .btn{flex:1 1 100%}
+  .form-actions .btn{flex:1 1 140px}
+  .new-field-row .field{max-width:none!important;flex:1 1 100%}
+}
+
+/* Tablets and below: contacts as cards so Edit/Delete are never off-screen */
+@media (max-width:900px){
+  .field-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .chip .col-delete,.chip .col-restore{min-width:36px;min-height:36px;margin:0;font-size:1.1rem}
+
+  .table-scroll{border:0;border-radius:0;overflow:visible}
+  table,tbody,tr,td{display:block;width:100%}
+  thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  tbody tr{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 12px;padding:4px 14px}
+  tbody tr:hover{background:var(--panel)}
+  td{display:flex;justify-content:space-between;gap:16px;white-space:normal;text-align:right;
+    padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+  td::before{content:attr(data-label);flex:0 0 38%;max-width:38%;text-align:left;color:var(--muted);
+    font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.02em;padding-top:2px}
+  td:last-child{border-bottom:0}
+  .table-scroll td.actions-cell,tbody tr:hover td.actions-cell{display:flex;position:static;background:transparent;box-shadow:none}
+  .table-scroll td.actions-cell .btn+.btn{margin-left:0}
+  td.actions-cell{gap:10px;padding:12px 0 8px}
+  td.actions-cell::before{display:none}
+  td.actions-cell .btn{flex:1}
+}

@@ -16,6 +16,7 @@
 
 *{box-sizing:border-box}
 html,body{height:100%}
+html{-webkit-text-size-adjust:100%}
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -28,7 +29,7 @@ a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 .top{
-  display:flex;align-items:baseline;gap:16px;
+  display:flex;align-items:baseline;gap:4px 16px;flex-wrap:wrap;
   max-width:840px;margin:0 auto;padding:24px 20px 8px;
 }
 .brand{font-size:.85rem;color:var(--muted);text-decoration:none;white-space:nowrap}
@@ -39,8 +40,7 @@ a{color:var(--accent)}
 
 /* Home screen — three distinct, separated paths */
 .home-intro{color:var(--muted);margin:4px 0 20px;font-size:.94rem}
-.home-grid{display:grid;gap:16px;grid-template-columns:1fr}
-@media (min-width:640px){.home-grid{grid-template-columns:repeat(3,1fr)}}
+.home-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
 .home-card{
   text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
   padding:22px;cursor:pointer;font:inherit;color:inherit;display:flex;flex-direction:column;gap:6px;
@@ -86,7 +86,7 @@ select{
 .mode-card h3{margin:0 0 4px;font-size:.98rem}
 .mode-card p{margin:0;color:var(--muted);font-size:.85rem}
 
-.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin:12px 0 20px;
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:6px;margin:12px 0 20px;
   max-height:280px;overflow:auto;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
 .topic-row{display:flex;align-items:center;gap:8px;font-size:.86rem}
 .topic-row label{flex:1;cursor:pointer}
@@ -146,3 +146,68 @@ select{
 .topic-breakdown .row{display:flex;justify-content:space-between;padding:6px 0;font-size:.88rem;border-bottom:1px solid var(--line)}
 
 .foot{max-width:840px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:.78rem}
+
+/* Cheat Sheets mode */
+.cs-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.cs-bar select{flex:1;min-width:200px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:inherit}
+.cs-opts{display:flex;gap:18px;flex-wrap:wrap;font-size:.86rem;color:var(--muted);margin-bottom:8px}
+.cs-title{margin:8px 0 0;font-size:1.25rem}
+.cs-progress{margin:2px 0 14px;color:var(--muted);font-size:.85rem}
+.cs-primer{background:var(--accent-soft);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px}
+.cs-primer h3{margin:0 0 6px;font-size:.95rem}
+.cs-primer ul{margin:0;padding-left:20px}
+.cs-primer li{margin:5px 0}
+.cs-mnem{margin:10px 0 0;font-weight:600;color:var(--accent)}
+.cs-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.cs-q{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px}
+.cs-q.known{opacity:.6}
+.cs-stem{margin:0 0 6px;font-weight:600}
+.cs-ans{margin:0 0 6px;padding:6px 10px;background:var(--good-bg);color:var(--good);border-radius:8px}
+.cs-hook{margin:0 0 4px;font-weight:600;color:var(--accent)}
+.cs-why{margin:0 0 6px;font-size:.88rem;color:var(--muted)}
+.cs-known{font-size:.82rem;color:var(--muted);cursor:pointer}
+.cs-show{background:none;border:1px solid var(--accent);color:var(--accent);border-radius:8px;padding:5px 12px;cursor:pointer;font:inherit;margin-bottom:6px}
+.cs-nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+
+.cs-key{margin:0 0 4px;font-weight:600}
+.cs-more summary{cursor:pointer;color:var(--accent);font-size:.84rem}
+.cs-more .cs-why{margin-top:4px}
+
+.setup-actions{display:flex;gap:10px;flex-wrap:wrap}
+.topic-row input{flex:none}
+.cs-bar select{min-width:0;flex:1 1 220px}
+.foot p{margin:0 0 8px}
+
+/* Phones and small tablets */
+@media (max-width:640px){
+  .top{flex-direction:column;align-items:flex-start;gap:2px;padding:16px 14px 4px}
+  .wrap{padding:12px 14px 40px}
+  .foot{padding:0 14px 32px}
+  .setup,.qcard,.summary{padding:16px}
+  .home-card{padding:18px}
+  .qtext{font-size:1.02rem;margin-bottom:16px}
+  .opt{padding:14px 12px;min-height:52px}
+  .btn{min-height:46px}
+  .setup-actions .btn,.card-actions .btn{flex:1 1 140px}
+  .topics{max-height:55vh}
+  .topic-row{min-height:44px;gap:10px}
+  .topic-row input{width:22px;height:22px}
+  .topic-row label{padding:8px 0}
+  .topic-actions{gap:16px}
+  .topic-actions button{min-height:40px;padding:0 4px}
+  .session-head .btn{min-height:44px}
+  .topic-breakdown .row{gap:12px}
+  .diagram-wrap{padding:8px}
+  /* Cheat Sheets */
+  .cs-bar{gap:8px}
+  .cs-bar .btn,.cs-bar select{flex:1 1 100%;min-height:46px}
+  .cs-opts{flex-direction:column;gap:0}
+  .cs-opts label{display:flex;align-items:center;gap:10px;min-height:44px}
+  .cs-opts input,.cs-known input{width:22px;height:22px;flex:none}
+  .cs-known{display:flex;align-items:center;gap:10px;min-height:44px}
+  .cs-show{width:100%;min-height:46px}
+  .cs-more summary{padding:10px 0}
+  .cs-q{padding:12px 14px}
+  .cs-nav{flex-direction:column}
+  .cs-nav .btn{width:100%}
+}

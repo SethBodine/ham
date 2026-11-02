@@ -307,7 +307,7 @@
     // "+ Add field" — define a brand new custom field (name, type, char cap for text).
     panel.appendChild(renderNewFieldControl());
 
-    var actions = el('div', { style: 'margin-top:16px;display:flex;gap:10px' });
+    var actions = el('div', { class: 'form-actions' });
     actions.appendChild(el('button', {
       class: 'btn', type: 'button',
       onclick: function () {
@@ -479,6 +479,24 @@
       .concat(state.fieldDefs.map(function (f) { return { key: f.key, label: f.label, custom: true }; }))
       .concat(legacyCols.map(function (k) { return { key: k, label: k, legacy: true }; }));
 
+    // On narrow screens the header row is hidden (rows become cards), so custom/legacy
+    // columns are also offered here as chips; CSS hides this on wider screens.
+    var chips = null;
+    var manageable = columns.filter(function (c) { return c.custom || c.legacy; });
+    if (manageable.length) {
+      chips = el('div', { class: 'field-chips' }, [el('span', { class: 'muted' }, ['Custom fields:'])]);
+      manageable.forEach(function (c) {
+        chips.appendChild(el('span', { class: 'chip' }, [
+          c.label + (c.legacy ? ' \u2020' : ''),
+          c.legacy
+            ? el('button', { class: 'col-restore', type: 'button', title: 'Restore this field to the active field list', 'aria-label': 'Restore field ' + c.label,
+                onclick: function () { restoreFieldDef(c.key, findSampleValue(c.key)); } }, ['\u21BA'])
+            : el('button', { class: 'col-delete', type: 'button', title: 'Remove this field from the field list', 'aria-label': 'Remove field ' + c.label,
+                onclick: function () { deleteFieldDef(c.key); } }, ['\u00D7'])
+        ]));
+      });
+    }
+
     var scroll = el('div', { class: 'table-scroll' });
     var table = el('table');
 
@@ -508,7 +526,7 @@
       return (a.createdAt || '').localeCompare(b.createdAt || '');
     });
     sorted.forEach(function (entry, i) {
-      var cells = [el('td', {}, [String(i + 1)])];
+      var cells = [el('td', { 'data-label': '#' }, [String(i + 1)])];
       columns.forEach(function (c) {
         var v = entry[c.key];
         var display;
@@ -519,6 +537,7 @@
         } else {
           display = v === undefined || v === null || v === '' ? '—' : String(v);
         }
+        titleAttr['data-label'] = c.label;
         cells.push(el('td', titleAttr, [display]));
       });
       var actions = el('td', { class: 'actions-cell' }, [
@@ -530,6 +549,7 @@
     });
     table.appendChild(tbody);
     scroll.appendChild(table);
+    if (chips) panel.appendChild(chips);
     panel.appendChild(scroll);
     if (legacyCols.length) {
       panel.appendChild(el('p', { class: 'muted', style: 'font-size:.78rem;margin-top:10px' }, [

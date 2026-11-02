@@ -1,15 +1,16 @@
 # ZL Ham Radio Toolkit
 
-Two tools, one Cloudflare Pages site, deployed to **https://ham.b0x.co.nz** (primary)
-and also reachable at **https://ham.insecure.co.nz** (alternate — same deployment, both
-custom domains point at the same Cloudflare Pages project, no redirect between them):
+Two tools, one Cloudflare Pages site, deployed to **https://ham.insecure.co.nz**:
 
 - **`/study`** — a study/self-test tool for the NZART Amateur Radio Examination
   (New Zealand only). All 600 questions from the NZART question bank, with
-  three modes: **Learn** (speed-learning flashcards, answer auto-reveals),
+  four modes: **Learn** (speed-learning flashcards, answer auto-reveals),
   **Test** (answer yourself, immediate right/wrong + explanation), and
   **Mock Exam** (60 questions drawn the same way the real exam is built —
-  one per ten questions per topic — pass mark 40/60).
+  one per ten questions per topic — pass mark 40/60), and **Cheat Sheets**
+  (read-and-remember: a short primer per section, then each question boiled down
+  to the correct answer, why, and a memory hook; no timer; "I know this" ticks
+  stored in `localStorage`).
 - **`/calllog`** — a private, key-protected station contact log backed by
   Cloudflare KV, with flexible fields (missing data is just "not filled in
   yet", not an error).
@@ -41,7 +42,7 @@ robots.txt            keeps /calllog out of search indexes
 2. In Cloudflare Pages, create a project from the GitHub repo.
    - Build command: none / leave blank.
    - Build output directory: `/` (the repo root).
-3. Add the custom domain `ham.b0x.co.nz` to the Pages project.
+3. Add the custom domain `ham.insecure.co.nz` to the Pages project.
 4. Create the KV namespace and bind it:
    ```
    npx wrangler kv namespace create LOGBOOK
@@ -58,7 +59,7 @@ robots.txt            keeps /calllog out of search indexes
    ```
    or add it via the dashboard: Pages project → Settings → Environment
    variables → add `LOG_API_KEY` as **encrypted**.
-6. Deploy. Visit `https://ham.b0x.co.nz/calllog` and enter the key you
+6. Deploy. Visit `https://ham.insecure.co.nz/calllog` and enter the key you
    generated to unlock it.
 
 ## The exam study tool
@@ -77,9 +78,10 @@ robots.txt            keeps /calllog out of search indexes
   names, signal flow, and answer-key-consistent pin labelling) rather than
   pixel copies of the original artwork.
 - Each question has an `id` like `"27-14"` (topic 27, question 14 in that
-  topic), the four options, and the correct answer letter. There are no
-  official worked explanations in the source PDF — "Test" mode shows the
-  correct option and its text rather than a fabricated explanation.
+  topic), the four options, and the correct answer letter. The
+  `explanation` text was written for this site; the source PDF has no worked
+  explanations.
+- `study/data/notes.json` feeds Cheat Sheets mode: `topics` holds a `title`, a `primer` (short bullet facts) and `mnemonics` for each of the 30 topics (keyed by topic number as a string), and `keys` holds a one-line key fact per question `id` (shown first, with the full `explanation` tucked under a "Why" toggle), and `hooks` holds optional one-line memory aids keyed by question `id`. Questions without a key just show their `explanation`. `study/cheatsheet.js` renders it and is loaded by `study/index.html` after `app.js`.
 - Progress (per-question seen/correct counts) is stored only in
   `localStorage` in the visitor's own browser — nothing is sent anywhere.
 - To refresh the question bank later (e.g. if NZART revises it), replace
@@ -182,16 +184,9 @@ The landing page and `/study` are the two pages meant to be publicly discoverabl
 `X-Robots-Tag: noindex` + on-page `<meta name="robots" content="noindex, nofollow">`)
 and none of that — or any backend/`functions/` code — was touched here.
 
-- **Dual domain**: this site is intentionally hosted at both `ham.b0x.co.nz` (primary)
-  and `ham.insecure.co.nz` (a valid alternate — same deployment, no redirect between
-  them, both meant to work). To avoid diluting search ranking by having the same
-  content look like two separate sites, every canonical URL, `og:url`, JSON-LD `@id`,
-  `robots.txt` `Sitemap:` directive, and `sitemap.xml` entry added below points at the
-  **primary domain, `ham.b0x.co.nz`**, regardless of which domain actually serves the
-  request — that's the normal way to tell search engines "these are the same page,
-  treat this one as canonical" without needing a redirect. `llms.txt` mentions both
-  domains explicitly so an AI system doesn't treat the alternate as a separate,
-  unrelated site.
+- Fixed a stale domain: the README referred to `ham.b0x.co.nz` throughout, but the site
+  is actually deployed at `ham.insecure.co.nz`. Updated the three references above and
+  used the real domain in every canonical/OG/sitemap/robots entry added below.
 - Added canonical, Open Graph/Twitter tags, and a `WebSite` JSON-LD block to the landing
   page (`index.html`).
 - `/study` is a client-rendered app shell like `hops` and `dmarc` — `study/app.js`
@@ -200,9 +195,16 @@ and none of that — or any backend/`functions/` code — was touched here.
   JSON-LD, and a `<noscript>` block (description + FAQ) placed outside `#app` so it's
   real static content for crawlers and no-JS browsers, invisible to everyone else.
 - New `robots.txt` additions: explicit `Allow`/`Disallow: /calllog/` pairs for the major
-  AI/LLM crawlers (previously only the wildcard `User-agent: *` rule existed).
+  AI/LLM crawlers (previously only the wildcard `User-agent: *` rule existed), and the
+  `Sitemap:` directive now points at the real domain.
 - New `sitemap.xml` lists only the homepage and `/study/` — `/calllog/` is intentionally
   excluded, same reasoning as robots.txt.
 - New `llms.txt` describes `/study` normally, but explicitly tells AI crawlers/agents
   not to fetch, index, or summarize anything under `/calllog/`, since it's a private,
   key-protected logbook, not a content page.
+
+## Mobile layout, QSL card placeholder, footers
+
+- Both apps are responsive down to ~320px. On phones/tablets (≤900px) the call log's contacts table becomes one card per contact so every field and the Edit/Delete buttons are on screen (custom fields are managed via chips above the list); on wider screens it stays a table. Tap targets are ≥44px on phones.
+- The main page shows a QSL card placeholder (`assets/qsl-card.svg`, 1100×700). To use your own card, replace that file with an image of the same name, or save e.g. `assets/qsl-card.jpg` and update the `src` in `index.html`.
+- Every page footer links to the GitHub repo (https://github.com/SethBodine/ham).
