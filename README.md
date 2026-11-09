@@ -206,5 +206,13 @@ and none of that — or any backend/`functions/` code — was touched here.
 ## Mobile layout, QSL card placeholder, footers
 
 - Both apps are responsive down to ~320px. On phones/tablets (≤900px) the call log's contacts table becomes one card per contact so every field and the Edit/Delete buttons are on screen (custom fields are managed via chips above the list); on wider screens it stays a table. Tap targets are ≥44px on phones.
-- The main page shows a QSL card placeholder (`assets/qsl-card.svg`, 1100×700). To use your own card, replace that file with an image of the same name, or save e.g. `assets/qsl-card.jpg` and update the `src` in `index.html`.
+- The main page shows the station's QSL card (`assets/qsl-card.jpg`, 1296×816). To change it, replace that file (same name, or update the `src`, `width`, `height` and `alt` in `index.html`).
 - Every page footer links to the GitHub repo (https://github.com/SethBodine/ham).
+
+## Call log: entry form, export and field handling
+
+- **Date & Time** defaults to the current local time whenever the Add contact form loads. It is shown in your local timezone (with a live "stored as … UTC" line and a *Use current time* link) and is always saved in UTC.
+- **Signal rcvd / sent** each have an *i* icon: hover, focus or tap it for the R-S-T scales (Readability 1–5, Strength 1–9, Tone 1–9 for CW/digital). *Rcvd* is the report you were given (how they heard you); *Sent* is the report you gave (how you heard them). Source: https://en.wikipedia.org/wiki/R-S-T_system
+- **Notes** is a multi-line box that spans the form width and can be resized vertically (max 2000 characters).
+- **Export / backup** (Contacts panel): the main button downloads CSV; the arrow offers CSV or JSON. CSV is UTF-8 with a BOM (opens correctly in Excel), has a `contactDateTimeLocal` column next to the UTC `contactDateTime`, and neutralises cells that start with `=`, `+`, `-` (non-numeric) or `@` by prefixing `'`. JSON is a full backup: `exportedAt`, `stationCallsign`, `timezone`, `fields` (your custom field list) and `entries`. Both include data held under fields that have since been removed.
+- **Custom fields** can be removed from the Add/Edit form with the × beside each field (this works even with no contacts yet). Removing a field only changes the field list; saved contacts are never changed by it. Their values stay on the contact (shown as a † column) until you choose *Remove from this contact* when editing it. Anything you have typed in the form is kept while you add or remove fields.

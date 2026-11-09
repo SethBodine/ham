@@ -27,7 +27,7 @@ a{color:var(--accent)}
 .panel h2{margin-top:0;font-size:1.02rem}
 
 label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px}
-input[type=text],input[type=password],input[type=date],input[type=time],input[type=datetime-local],input[type=number],select{
+input[type=text],input[type=password],input[type=date],input[type=time],input[type=datetime-local],input[type=number],select,textarea{
   width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;background:#fff;color:var(--ink);
 }
 .readonly-field{background:var(--accent-soft);color:var(--muted);cursor:default}
@@ -92,6 +92,55 @@ tbody tr:hover td.actions-cell{background:var(--accent-soft)}
 .chip{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;
   padding:2px 4px 2px 12px;background:var(--panel);font-size:.84rem}
 
+
+
+
+
+/* Notes: multi-line, full width, user-resizable */
+textarea{resize:vertical;min-height:84px;line-height:1.45}
+.field-wide{grid-column:1/-1}
+@media (min-width:640px){.field-span2{grid-column:span 2}}
+.table-scroll td.notes-cell{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+
+/* Date & time hint, labels with extras */
+.hint{font-size:.76rem;color:var(--muted);margin-top:4px}
+.link-btn{background:none;border:0;padding:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer}
+.label-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;min-height:24px}
+.label-row label{margin:0}
+
+/* Signal report help (hover or keyboard/tap focus) */
+.info-wrap{position:relative;display:inline-flex}
+.info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;
+  border:1px solid var(--muted);color:var(--muted);font:italic 700 .72rem Georgia,serif;cursor:help;user-select:none}
+.info:hover,.info:focus{background:var(--accent);border-color:var(--accent);color:#fff;outline:none}
+.tip{display:none;position:fixed;z-index:60;left:8px;top:0;width:min(340px,calc(100vw - 16px));
+  background:#1f2933;color:#fff;border-radius:10px;padding:12px 14px;font-size:.78rem;line-height:1.45;
+  font-weight:400;text-transform:none;letter-spacing:0;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+.tip p{margin:6px 0 0}
+.tip strong{display:block;font-size:.84rem}
+.info-wrap:hover .tip,.info-wrap:focus-within .tip{display:block}
+
+/* Remove a custom field from the Add contact form */
+.field-remove{margin-left:auto;background:none;border:0;color:var(--bad);font-size:1.15rem;line-height:1;
+  cursor:pointer;padding:2px 8px;border-radius:6px}
+.field-remove:hover{background:var(--bad-bg)}
+.legacy-row{flex-wrap:wrap}
+.legacy-row.will-remove .legacy-val{text-decoration:line-through}
+
+/* Contacts header + export split button */
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.panel-head h2{margin:0}
+.split-btn{position:relative;display:inline-flex}
+.split-main{border-top-right-radius:0;border-bottom-right-radius:0}
+.split-toggle{border-top-left-radius:0;border-bottom-left-radius:0;border-left:1px solid rgba(255,255,255,.4);padding-left:10px;padding-right:10px}
+.split-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:40;min-width:270px;background:#fff;
+  border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.16);padding:6px}
+.split-menu[hidden]{display:none}
+.menu-item{display:block;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:10px 12px;
+  font:inherit;font-size:.86rem;color:var(--ink);cursor:pointer;min-height:44px}
+.menu-item:hover,.menu-item:focus-visible{background:var(--accent-soft)}
+.menu-desc{display:block;color:var(--muted);font-size:.76rem;margin-top:1px}
+
 /* Phones and small tablets: compact spacing, larger tap targets */
 @media (max-width:640px){
   .top{flex-direction:column;align-items:flex-start;gap:2px;padding:16px 14px 4px}
@@ -103,6 +152,12 @@ tbody tr:hover td.actions-cell{background:var(--accent-soft)}
   input[type=text],input[type=password],input[type=date],input[type=time],input[type=datetime-local],input[type=number],select{min-height:46px}
   .toprow{align-items:stretch}
   .toprow .field{flex:1 1 100%}
+  .field-remove{min-width:40px;min-height:40px}
+  .info{width:26px;height:26px}
+  textarea{min-height:110px}
+  .panel-head .split-btn{width:100%}
+  .split-main{flex:1}
+  .split-menu{left:0;right:0;min-width:0}
   .toprow .btn{flex:1 1 100%}
   .form-actions .btn{flex:1 1 140px}
   .new-field-row .field{max-width:none!important;flex:1 1 100%}
@@ -125,6 +180,7 @@ tbody tr:hover td.actions-cell{background:var(--accent-soft)}
   td:last-child{border-bottom:0}
   .table-scroll td.actions-cell,tbody tr:hover td.actions-cell{display:flex;position:static;background:transparent;box-shadow:none}
   .table-scroll td.actions-cell .btn+.btn{margin-left:0}
+  .table-scroll td.notes-cell{max-width:none;overflow:visible;text-overflow:clip;white-space:pre-line}
   td.actions-cell{gap:10px;padding:12px 0 8px}
   td.actions-cell::before{display:none}
   td.actions-cell .btn{flex:1}
