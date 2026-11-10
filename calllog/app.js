@@ -5,12 +5,13 @@
   var KEY_STORAGE = 'calllog-access-key';
 
   var STANDARD_FIELDS = [
-    { key: 'callsign', label: 'Callsign worked', type: 'text', required: true },
+    { key: 'callsign', label: 'Callsign worked', type: 'text', required: true, upper: true },
     { key: 'firstName', label: 'First name', type: 'text' },
     { key: 'surname', label: 'Surname', type: 'text', placeholder: 'Optional' },
     { key: 'contactDateTime', label: 'Date & Time', type: 'datetime', required: true, span2: true },
-    { key: 'frequency', label: 'Frequency', type: 'text', placeholder: 'e.g. 14.245' },
-    { key: 'mode', label: 'Mode', type: 'text', placeholder: 'e.g. SSB, FM, FT8' },
+    { key: 'frequency', label: 'Frequency (TX)', type: 'text', placeholder: 'MHz, e.g. 14.245' },
+    { key: 'mode', label: 'Mode', type: 'text', placeholder: 'e.g. SSB, FM, FT8', upper: true },
+    { key: 'freqRx', label: 'RX frequency', type: 'text', placeholder: 'only if different', split: true },
     { key: 'sigRcvd', label: 'Signal rcvd', type: 'text', placeholder: 'e.g. 59', rst: 'rcvd' },
     { key: 'sigSent', label: 'Signal sent', type: 'text', placeholder: 'e.g. 59', rst: 'sent' },
     { key: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Anything worth remembering about this contact\u2026', wide: true },
@@ -48,6 +49,35 @@
     var datePart = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
     var timePart = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
     return datePart + ' ' + timePart;
+  }
+
+  // Callsigns and modes are always upper case. Keeps the caret where it was while converting.
+  function forceUpper(input) {
+    input.setAttribute('autocapitalize', 'characters');
+    input.setAttribute('autocomplete', 'off');
+    input.setAttribute('spellcheck', 'false');
+    input.addEventListener('input', function () {
+      var u = input.value.toUpperCase();
+      if (u !== input.value) {
+        var a = input.selectionStart, b = input.selectionEnd;
+        input.value = u;
+        try { input.setSelectionRange(a, b); } catch (e) { /* not all input types support it */ }
+      }
+    });
+  }
+
+  // MHz string <-> integer Hz (avoids floating-point noise when adding offsets).
+  function mhzToHz(str) {
+    var n = parseFloat(String(str || '').replace(',', '.'));
+    return isFinite(n) ? Math.round(n * 1e6) : NaN;
+  }
+  function hzToMhz(hz) { return String(Number((hz / 1e6).toFixed(6))); }
+  function describeSplit(txStr, rxStr) {
+    var tx = mhzToHz(txStr), rx = mhzToHz(rxStr);
+    if (!isFinite(tx) || !isFinite(rx) || tx === rx) return '';
+    var d = rx - tx, abs = Math.abs(d);
+    var size = abs >= 1e6 && abs % 1e6 === 0 ? (abs / 1e6) + ' MHz' : String(Number((abs / 1000).toFixed(3))) + ' kHz';
+    return 'Split: RX is ' + size + (d > 0 ? ' above' : ' below') + ' TX.';
   }
 
   function localTimezoneName() {
@@ -212,8 +242,10 @@
     var stationInput = el('input', { type: 'text', id: 'station-callsign', placeholder: 'Your station callsign' });
     stationInput.value = state.settings.stationCallsign || '';
     stationInput.style.maxWidth = '200px';
+    forceUpper(stationInput);
+    stationInput.value = stationInput.value.toUpperCase();
     stationInput.addEventListener('change', function () {
-      api('/settings', { method: 'PUT', body: { stationCallsign: stationInput.value.trim() } })
+      api('/settings', { method: 'PUT', body: { stationCallsign: stationInput.value.trim().toUpperCase() } })
         .then(function (r) { state.settings = r.settings; });
     });
     top.appendChild(el('div', { class: 'field', style: 'margin:0' }, [
@@ -263,6 +295,7 @@
         input = el('input', { type: f.type === 'datetime' ? 'datetime-local' : (f.type === 'date' ? 'date' : 'text'), id: 'f-' + f.key });
       }
       if (f.placeholder) input.setAttribute('placeholder', f.placeholder);
+      if (f.upper) forceUpper(input);   // registered before remember() so drafts store upper case
       if (f.type === 'datetime') {
         // A new contact defaults to "now" when the page/form loads: shown in local time, stored as UTC.
         input.value = editing ? isoToLocalInputValue(editing[f.key]) : isoToLocalInputValue(new Date().toISOString());
@@ -270,6 +303,7 @@
         input.value = editing ? (editing[f.key] || '') : '';
       }
       remember(input, f.key);
+      if (f.upper) input.value = input.value.toUpperCase();
       inputs[f.key] = input;
       if (f.required) {
         input.addEventListener('input', function () { input.classList.remove('invalid'); });
@@ -291,7 +325,44 @@
         setHint();
         cell.appendChild(hint);
       }
+      if (f.split) {
+        // RX frequency (only when it differs from TX): live "split" description + quick presets.
+        var splitHint = el('div', { class: 'hint', id: 'split-hint' });
+        var refreshSplit = function () { splitHint.textContent = describeSplit(inputs.frequency.value, input.value); };
+        input.addEventListener('input', refreshSplit);
+        inputs.frequency.addEventListener('input', refreshSplit);
+        refreshSplit();
+        cell.appendChild(splitHint);
+      }
       grid.appendChild(cell);
+      if (f.split) {
+        var presets = el('select', { id: 'f-quicksplit', 'aria-label': 'Quick split presets' }, [
+          el('option', { value: '' }, ['Choose\u2026']),
+          el('option', { value: 'simplex' }, ['Simplex (RX same as TX)']),
+          el('option', { value: '-600' }, ['RX 600 kHz below TX']),
+          el('option', { value: '600' }, ['RX 600 kHz above TX']),
+          el('option', { value: '-5000' }, ['RX 5 MHz below TX']),
+          el('option', { value: '5000' }, ['RX 5 MHz above TX']),
+        ]);
+        presets.addEventListener('change', function () {
+          var v = presets.value; presets.value = '';
+          if (!v) return;
+          var rxInput = inputs.freqRx;
+          if (v === 'simplex') {
+            rxInput.value = '';
+          } else {
+            var tx = mhzToHz(inputs.frequency.value);
+            if (!isFinite(tx)) { document.getElementById('split-hint').textContent = 'Enter the TX frequency (MHz) first.'; return; }
+            rxInput.value = hzToMhz(tx + Number(v) * 1000);
+          }
+          rxInput.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        grid.appendChild(el('div', { class: 'field' }, [
+          el('label', { for: 'f-quicksplit' }, ['Quick split']),
+          presets,
+          el('div', { class: 'hint' }, ['Repeaters: 2 m is \u00B1600 kHz, 70 cm \u00B15 MHz. SSB: use for split operation.'])
+        ]));
+      }
       // Drop the read-only "last worked" lookup right after the callsign field.
       if (f.key === 'callsign') {
         grid.appendChild(el('div', { class: 'field' }, [
@@ -327,7 +398,7 @@
         var when = last.contactDateTime || last.createdAt;
         lastWorkedInput.value = formatLocalDisplay(when) + ' local';
         ['firstName', 'surname', 'mode'].forEach(function (k) {
-          if (!inputs[k].value.trim() && last[k]) inputs[k].value = last[k];
+          if (!inputs[k].value.trim() && last[k]) inputs[k].value = k === 'mode' ? String(last[k]).toUpperCase() : last[k];
         });
       }
     }
@@ -514,7 +585,9 @@
         return;
       }
       var v = inputs[f.key].value.trim();
+      if (f.upper) v = v.toUpperCase();
       if (v) payload[f.key] = v;
+      else if (editing && editing[f.key] !== undefined && editing[f.key] !== null && editing[f.key] !== '') payload[f.key] = null;   // blank on edit = clear it
     });
     state.fieldDefs.forEach(function (f) {
       var raw = registryInputs[f.key] ? registryInputs[f.key].value.trim() : '';
@@ -636,6 +709,7 @@
           if (v) titleAttr.title = v + ' UTC';
         } else {
           display = v === undefined || v === null || v === '' ? '—' : String(v);
+          if (c.key === 'callsign' || c.key === 'mode') display = display.toUpperCase();
         }
         titleAttr['data-label'] = c.label;
         if (c.key === 'notes') { titleAttr['class'] = 'notes-cell'; if (v) titleAttr.title = String(v); }
@@ -709,7 +783,12 @@
 
   // ---------- Export / backup ----------
   function sortedEntries() {
-    return state.entries.slice().sort(function (a, b) { return (a.createdAt || '').localeCompare(b.createdAt || ''); });
+    return state.entries.map(function (e) {
+      var c = Object.assign({}, e);
+      if (typeof c.callsign === 'string') c.callsign = c.callsign.toUpperCase();
+      if (typeof c.mode === 'string') c.mode = c.mode.toUpperCase();
+      return c;
+    }).sort(function (a, b) { return (a.createdAt || '').localeCompare(b.createdAt || ''); });
   }
 
   function exportKeys(entries) {

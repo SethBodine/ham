@@ -105,7 +105,7 @@ textarea{resize:vertical;min-height:84px;line-height:1.45}
 /* Date & time hint, labels with extras */
 .hint{font-size:.76rem;color:var(--muted);margin-top:4px}
 .link-btn{background:none;border:0;padding:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer}
-.label-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;min-height:24px}
+.label-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
 .label-row label{margin:0}
 
 /* Signal report help (hover or keyboard/tap focus) */
